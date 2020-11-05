@@ -1,0 +1,10 @@
+#-------- assembly statistics --------
+sequence #: 18254	total length: 13431791	max length: 1070601	N50: 4675	N90: 246
+#--------     MAGs summary    --------
+mags number: 3	resolved haplotypes: 5
+bacteria: 4	archeae: 0
+#-------- MAGs gtdb taxonomy  --------
+mag	nb_haplo	RED	Domain	Phylum	Class	Order	familly	genus	strain
+Bin_2	1	1	Bacteria	Firmicutes_A	Clostridia	Tissierellales	Peptoniphilaceae	Peptoniphilus_A	Peptoniphilus_A rhinitidis
+Bin_5	1	1	Bacteria	Firmicutes	Bacilli	Lactobacillales	Enterococcaceae	Enterococcus	Enterococcus faecalis
+Bin_9	3	1	Bacteria	Firmicutes	Bacilli	Staphylococcales	Staphylococcaceae	Staphylococcus	Staphylococcus epidermidis
