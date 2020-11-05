@@ -37,7 +37,10 @@ Try activating the relevant conda environment :
 
 #### Dataset
 [Sharon&al 2012](https://pubmed.ncbi.nlm.nih.gov/22936250/): Infant gut metagenomes, first metagenomic time series
-Dataset path : 
+Dataset path :     /home/training/Data/infantgut
+
+
+
 
 Check the number of reads :
 
@@ -217,6 +220,52 @@ with bin assignments together with a list of MAGs satisfying 75% single-copy cor
 
 The list of single-copy core genes are given as COGs in the data file ***SnakeNest/scg_data/scg_cogs_to_run.txt*** as default but this file can be changed.
 
+
+Now let's have a look at the assembly graph, low resolution and high resolution.
+
+    mkdir AssemblyGraphs
+    cd AssemblyGraphs 
+    
+    wget https://desmantutorial.s3.climb.ac.uk/contigs_colorM.gfa
+    wget https://desmantutorial.s3.climb.ac.uk/high_res_colorM.gfa
+
+
+Start up Bandage:
+
+    Bandage
+
+Open up the first of these files contigs_colorM.gfa in Bandage. You should see something like this:
+
+![Bandage contigs](https://github.com/chrisquince/Ebame5/blob/master/Figures/contigs_bandage.png)
+
+The colors correspond to four MAGs we obtained from clustering the Spades contigs: 
+* Bin3 magenta, E. faecalis
+* Bin7 blue 
+* Bin12 red
+* Bin19 green, Staph. epidermidis
+
+Why are some of the bins fragmented?
+
+Can you find any contigs that are misassigned
+
+Locate these two contigs with the search feature:
+
+NODE_55_length_32977_cov_19.323249, NODE_327_length_8496_cov_5.646014
+
+These correspond to contigs annotated to the single-copy core gene COG0060 in Bin19. Why are there two of them? 
+Try blasting the sequences against the NCBI.
+
+Now open up the file high_res_colorM.gfa
+
+And find these nodes. Corresponding to COG0016 in Bin19:
+* start 2816027
+* end 2524601
+
+You should be able to determine that at least two strains are present from the variant bubbles in the graph.
+
+This is what the STRONG pipeline resolves into strains.
+
+
 <a name="graphextraction"/>
 <a name="bayespaths"/>
 
@@ -275,7 +324,6 @@ There are also combined pdfs in the top level of results ***haplotypes_coverage.
 and ***haplotypes_tree.pdf***. Finally ***summary.tsv*** contains some info on the assembly and number of strains resolved.
 
 <a name="desman"/>
-
 ### DESMAN
 
 This section runs the [DESMAN](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-017-1309-9) program on each MAG to infer strains using variant frequencies across samples obtained from read mapping. This can be viewed as a complement to the BayesPaths algorithm and a validation of its predictions. The detailed pipeline is:
@@ -327,7 +375,9 @@ by this value to get the initial bin number for CONCOCT, defaults to 3
 
 ### ------ Assembly parameters ------ 
 **read_length**:  read length used for sequencing 
+
 **assembly:** 
+
 &nbsp;&nbsp;&nbsp;&nbsp;    **assembler**: program for coassembly currently only metaSPAdes is supported specify as ***spades*** which is also the default
 
 &nbsp;&nbsp;&nbsp;&nbsp;    **k**:  kmer length for assembly 77 is a good choice for 150 bp reads. It is possible to use a list of 
@@ -364,6 +414,9 @@ for complex data sets:
 &nbsp;&nbsp;&nbsp;&nbsp; ***nb_repeat***: repeats for the Gibbs sampler per haplotype defaults to 5
 
 &nbsp;&nbsp;&nbsp;&nbsp; ***min_cov***: minimum coverage for a sample to be used defaults to 1
+
+
+
 
 
 
