@@ -37,7 +37,7 @@ Try activating the relevant conda environment :
 
 #### Dataset
 [Sharon&al 2012](https://pubmed.ncbi.nlm.nih.gov/22936250/): Infant gut metagenomes, first metagenomic time series
-Dataset path :     /home/training/Data/infantgut
+Dataset path :     /home/training/DB_folder/infantgut
 
 
 
