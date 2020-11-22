@@ -114,20 +114,5 @@ Why does it work? Why the symbolic link?
 
 -   Snakemake works in reverse, it start from the specified output and looks for rules/recipes able to generate it. It try also multiple wildcards values until it find a way to generate the output.
 -   As a snakemake grow bigger, ambiguity in rules may pop up : 2 rules with the same output. And thus, 2 rules/recipe to create the same input. To solve this issue, you need to restrict your rules making them less universal, either a specific path (prodigal/{genome.gff}), or a specific filename [genome}_prodigal.gff. You can also constrain wildcards or specify a priority of rules.
--   Snakemake only keep track of files specified in "input" and "output". A bad way to do snakemake is to have rules generating untracked files and just outputing a flag.
-
-example :
-
-```
-rule prodigal:
-    input: "{genome}.fa"
-    output: "prodigal_is_done"
-    params: mode=PRODIGAL_MODE
-    log:    "{genome}.log"
-    shell:
-        "prodigal -i {input} -a {wildcards.genome}.faa -d {wildcards.genome}.fna -f gff -o {wildcards.genome}.gff -p {params.mode} &>> {log}"
-
-```
-
 -   Snakemake will resolve the sequence of rules execution before starting --> if you don't know beforehand the number of files generated, it makes things more complicated. The solution is to use flags, to execute multiple independant snakemake or to use checkpoints
 
