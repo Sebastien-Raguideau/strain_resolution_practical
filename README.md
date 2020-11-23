@@ -345,7 +345,7 @@ Let's now have a look at the resulting graph. Use Bandage to visualize the outpu
 **Questions:** 
 What are the differences between the 3 assemblies graph?
 
-On the normal assembly we can see a unique contig, but in reality there are 2 strains. Why is there only 1 contigs?
+On the normal assembly we can see a unique contig, but in reality there are 3 strains. Why is there only 1 contigs?
 
 How would you proceed to reconstruct the 2 strains from theses graphs?
 
