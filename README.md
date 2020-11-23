@@ -1,5 +1,10 @@
 
 # Practical : Strain resolution
+
+Please connect using the option -Y. 
+
+    ssh username@ip -Y
+
 ##  STRONG - Strain Resolution ON Graphs
 STRONG resolves strains on assembly graphs by resolving variants on core COGs using co-occurrence across multiple samples.
 
@@ -7,7 +12,7 @@ STRONG resolves strains on assembly graphs by resolving variants on core COGs us
 #### Installation
 STRONG is already installed on your VM, you will find the git repos at : 
 `/usr/local/STRONG`
-It is a clone of the one available online and installation steps are detailed [there].(https://github.com/chrisquince/STRONG)
+It is a clone of the one available online and installation steps are detailed [there](https://github.com/chrisquince/STRONG).
 
 **Packages needed**:
 Current installation depend entirely on [conda](https://docs.conda.io/en/latest/), by creating an environment where all packages and their dependencies are installed. 
@@ -272,7 +277,17 @@ Symlink a pre-generated assembly folder to your STRONG_run folder :
 Try and relaunch STRONG.
 
 
-## Pipeline : detailed description
+## STRONG workflow
+#### overview
+
+![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/STRONG_overview.png)
+Steps
+1. ***assembly***: Runs just the [assembly steps](#assembly)  
+2. ***graphextraction***: Runs just the [graph extraction](#graphextraction)
+3. ***bayespaths***: Runs just the [bayespaths](#bayespaths)
+4. ***evaluation***:  Runs just the [evaluation steps](#evaluation)
+5. ***results***:  Runs just the [results steps](#results)
+6. ***desman***:  Runs just the [desman steps](#desman)
 
 <a name="assembly"/>
 
@@ -296,50 +311,39 @@ with bin assignments together with a list of MAGs satisfying 75% single-copy cor
 The list of single-copy core genes are given as COGs in the data file ***SnakeNest/scg_data/scg_cogs_to_run.txt*** as default but this file can be changed.
 
 
+#### The need for a "high resolution assembly graph"
+We are going to extract sugraphs from the assembly graph corresponding to COG0016.
+
+mkdir AssemblyGraphs
+cd AssemblyGraphs
+ 
 Now let's have a look at the assembly graph, low resolution and high resolution.
 
-    mkdir AssemblyGraphs
-    cd AssemblyGraphs 
-    
-    wget https://desmantutorial.s3.climb.ac.uk/contigs_colorM.gfa
-    wget https://desmantutorial.s3.climb.ac.uk/high_res_colorM.gfa
+    mkdir /home/student/Strain_resolution/AssemblyGraphs 
+    cd /home/student/Strain_resolution/AssemblyGraphs 
 
+Extract COG0016 from 3 assembly graph files  using Bandage : 
+use bandage
+	- on `assembly/spades/assembly_graph_with_scaffolds.gfa`, node 8367, distance 0
+	- on `assembly/high_res/graph_pack.gfa`, node 15609757, distance 100
+	- on  `assembly/high_res/simplified.gfa, `node 4713513, distance 50
 
-Start up Bandage:
+Example
 
-    Bandage
+    Bandage reduce /home/student/Strain_resolution/strong_run/assembly/spades/assembly_graph_with_scaffolds.gfa  NAME_OF_OUTPUT.gfa --scope aroundnodes --nodes 8367 --distance 0
 
-Open up the first of these files contigs_colorM.gfa in Bandage. You should see something like this:
+While this will not work on other situtation, we can here concatenate the gfa files as the nodes names are different : 
 
-![Bandage contigs](https://github.com/chrisquince/Ebame5/blob/master/Figures/contigs_bandage.png)
+    cat *.gfa > COG0016_3_assemblies.gfa
 
-The colors correspond to four MAGs we obtained from clustering the Spades contigs: 
-* Bin3 magenta, E. faecalis
-* Bin7 blue 
-* Bin12 red
-* Bin19 green, Staph. epidermidis
+Let's now have a look at the resulting graph. Use Bandage to visualize the output
 
-Why are some of the bins fragmented?
+![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/COG0016.png)
+What are the differences between the 3 assemblies graph?
 
-Can you find any contigs that are misassigned
+On the normal assembly we can see a unique contig, but in reality there are 2 strains. Why is there only 1 contigs?
 
-Locate these two contigs with the search feature:
-
-NODE_55_length_32977_cov_19.323249, NODE_327_length_8496_cov_5.646014
-
-These correspond to contigs annotated to the single-copy core gene COG0060 in Bin19. Why are there two of them? 
-Try blasting the sequences against the NCBI.
-
-Now open up the file high_res_colorM.gfa
-
-And find these nodes. Corresponding to COG0016 in Bin19:
-* start 2816027
-* end 2524601
-
-You should be able to determine that at least two strains are present from the variant bubbles in the graph.
-
-This is what the STRONG pipeline resolves into strains.
-
+How would you proceed to reconstruct the 2 strains from theses graphs?
 
 <a name="graphextraction"/>
 <a name="bayespaths"/>
@@ -420,6 +424,8 @@ where G is the number of haplotypes, H the number that are reliable, Err their m
 3. ***Deviance.pdf***: Deviance plot of fit with haplotype number
 
 <a name="Synthetic"/>
+
+
 
 
 
