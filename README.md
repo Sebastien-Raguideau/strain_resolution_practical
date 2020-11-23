@@ -11,7 +11,7 @@ STRONG resolves strains on assembly graphs by resolving variants on core COGs us
 ###  STRONG : quickstart
 #### Installation
 STRONG is already installed on your VM, you will find the git repos at : 
-`/usr/local/STRONG`
+`/home/student/repos/STRONG`
 It is a clone of the one available online and installation steps are detailed [there](https://github.com/chrisquince/STRONG).
 
 **Packages needed**:
