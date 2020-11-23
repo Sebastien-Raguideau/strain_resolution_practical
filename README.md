@@ -166,6 +166,8 @@ And an empty config file
 
     nano config.yaml
 
+
+**Questions:** 
 Copy previous template and fill the "?"
 
 What are the consequence of a small or high K value for the assembly? How should we chose K? [answer](https://github.com/rrwick/Bandage/wiki/Effect-of-kmer-size)
@@ -195,6 +197,7 @@ The required argument are an output directory, and a config file. You can also s
 
     STRONG /home/student/Strain_resolution/STRONG_run assembly --threads 4 --config config.yaml --verbose --dryrun
 
+**Questions:** 
 What is happening?
 
 To launch it for real, remove "assembly" and "--dryrun"
@@ -339,6 +342,7 @@ While this will not work on other situtation, we can here concatenate the gfa fi
 Let's now have a look at the resulting graph. Use Bandage to visualize the output
 
 ![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/COG0016.png)
+**Questions:** 
 What are the differences between the 3 assemblies graph?
 
 On the normal assembly we can see a unique contig, but in reality there are 2 strains. Why is there only 1 contigs?
@@ -383,13 +387,21 @@ This part of the pipeline generates results summaries of the MAG strain inferenc
 
 ![alt tag](https://github.com/chrisquince/STRONG/blob/master/Figures/Dag_rules7.png)
 
-A sub-directory is generated for each bin. These contain:
+Here is an example of output we obtain on synthetic dataset, where initial strain diversity is known. 
+
+Results consist of :
+
+ - summary file : assembly statistics, binning statistics, gtdb annotation (if run)
+ - per sample coverage of mags and infered haplotypes
+- A sub-directory is generated for each bin. These contain:
 
 1. A phylogentic trees of strains created on the single-copy genes with a combined heat map of percent sequence identity for the bin, for example:
 
 ![alt tag](https://github.com/chrisquince/STRONG/blob/master/Figures/TreeExample24.png)
 
 This will include the Bin consensus contig sequence (Bin_Name) (and alternatives if multiple COGs are present in bin - Bin_Name_nb) and evaluation strains when available. 
+
+
 
 2. In the ***graph*** sub-directory gfa files coloured by haplotype. These are viewable with [Bandage](https://rrwick.github.io/Bandage/) the file ***joined_SCG_graph.gfa*** contains all scgs in a single graph and the individual graphs are in the  ***cogs*** subdirectory
 
@@ -400,7 +412,17 @@ This will include the Bin consensus contig sequence (Bin_Name) (and alternatives
 ![alt tag](https://github.com/chrisquince/STRONG/blob/master/Figures/IntensityExample.png)
 
 There are also combined pdfs in the top level of results ***haplotypes_coverage.pdf***
-and ***haplotypes_tree.pdf***. Finally ***summary.tsv*** contains some info on the assembly and number of strains resolved.
+and ***haplotypes_tree.pdf***. 
+
+**Questions**
+
+ 1. Please open `strong_run/results/Bin_9/graph/joined_SCG_graph.gfa `
+    There are 3 strain on this graph and 1 color per strain, if a unitig
+    is traversed per 2 strains color are merged. Find a node where all 3
+    strain colors can be seen (look near COG0102)
+	   
+   2. Please open `strong_run/results/Bin_9/haplotypes_tree.pdf`
+   what are Bin_9 and Bin_9_nb_2. Why is Bin_9_nb_2 so different? 
 
 <a name="desman"/>
 
@@ -424,15 +446,3 @@ where G is the number of haplotypes, H the number that are reliable, Err their m
 3. ***Deviance.pdf***: Deviance plot of fit with haplotype number
 
 <a name="Synthetic"/>
-
-
-
-
-
-
-
-
-
-
-
-
