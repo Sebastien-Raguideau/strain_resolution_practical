@@ -1,4 +1,8 @@
-## Snakemake
+## STRONG is a Snakemake
+Let's have a look at STRONG 
+
+     cd /home/student/repos/STRONG/bin
+     less STRONG
 
 The Snakemake workflow management system is a tool to create **reproducible and scalable** data analyses. Workflows are described via a human readable, Python based language. They can be seamlessly scaled to server, cluster, grid and cloud environments, without the need to modify the workflow definition. Finally, Snakemake workflows can entail a description of required software, which will be automatically deployed to any execution environment.
 
@@ -18,7 +22,7 @@ Snakemake then devise the succession of rules (script/command) needed to generat
 
 Snakemake will schedule rules excution optimising ressources allocations (threads/memory/custom ressource).
 
-### Features
+##### Features
 
 -   It is possible to write and use python code inside snakemake
 -   snakemake keep track of all files, input input in your workflow. If the input of a rule has been updated, snakemake will rerun all depending rules.
@@ -26,7 +30,7 @@ Snakemake will schedule rules excution optimising ressources allocations (thread
 -   snakemake can be easily deployed to clusters without changing any code
 -   It is possible to specify ad hoc environment for each step of the pipeline and have each step executed in it's own environment
 
-#### Snakemake rule
+##### Snakemake rule
 
 The minimum rule is :
 
@@ -47,6 +51,16 @@ Example :
 
 ```
 By specifying a results, for instance contig.gff, snakemake will look at all available rules and look for any able to output contig.gff. In this case only prodigal is present and snakemake will look for contigs.fa.
+
+##### rules in STRONG
+Go to the STRONG repository, identify the rule responsible for gene calling (prodigal).
+
+    cd /home/student/repos/STRONG/SnakeNest
+    less cogs_annotation.snake
+
+Can you infer how many task are necessary to generate the file `SCG_tables.tsv`?
+
+##### snakemake hand on 
 
 Let's try to call genes on the low resolution assembly:
 
