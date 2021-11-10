@@ -1,8 +1,6 @@
-## STRONG is a Snakemake
-Let's have a look at STRONG 
+# Workflow bioinformatic
 
-     cd /home/student/repos/STRONG/bin
-     less STRONG
+## Snakemake
 
 The Snakemake workflow management system is a tool to create **reproducible and scalable** data analyses. Workflows are described via a human readable, Python based language. They can be seamlessly scaled to server, cluster, grid and cloud environments, without the need to modify the workflow definition. Finally, Snakemake workflows can entail a description of required software, which will be automatically deployed to any execution environment.
 
@@ -22,7 +20,7 @@ Snakemake then devise the succession of rules (script/command) needed to generat
 
 Snakemake will schedule rules excution optimising ressources allocations (threads/memory/custom ressource).
 
-##### Features
+### Features
 
 -   It is possible to write and use python code inside snakemake
 -   snakemake keep track of all files, input input in your workflow. If the input of a rule has been updated, snakemake will rerun all depending rules.
@@ -30,8 +28,7 @@ Snakemake will schedule rules excution optimising ressources allocations (thread
 -   snakemake can be easily deployed to clusters without changing any code
 -   It is possible to specify ad hoc environment for each step of the pipeline and have each step executed in it's own environment
 
-##### Snakemake rule
-
+## Hello world
 The minimum rule is :
 
 -   an input
@@ -39,51 +36,58 @@ The minimum rule is :
 -   a shell command/or python code
 
 Example :
-
+```bash
+rule Hello_world:
+    input: "/home/training/requirerement.txt"
+    output: "/home/training/snakemake.txt"
+    shell: "echo HELLO WORLD > {output}"
 ```
- rule prodigal:
-    input: "contigs.fa"
-    output: faa="contigs.faa",
-            fna="contigs.fna",
-            gff="contigs.gff"
-    shell:
-        "prodigal -i {input} -a {output.faa} -d {output.fna} -f gff -o {output.gff} -p meta "
 
+Write that command in a file for instance with nano.
+```bash
+mkdir -p ~/data/mydatalocal/AD_snakemake
+cd ~/data/mydatalocal/AD_snakemake
+nano hello.snake
 ```
-By specifying a results, for instance contig.gff, snakemake will look at all available rules and look for any able to output contig.gff. In this case only prodigal is present and snakemake will look for contigs.fa.
+**Debuging:**
+	- don't forget the colons
+	- don't forget the indentations
 
-##### rules in STRONG
-Go to the STRONG repository, identify the rule responsible for gene calling (prodigal).
 
-    cd /home/student/repos/STRONG/SnakeNest
-    less cogs_annotation.snake
+Then ask snakemake to generate that file:
+```bash
+snakemake -s hello.snake ~/snakemake.txt
+```
+<details><summary>What happens? </summary>
+<p>
+	
+By specifying a results, for instance ~/snakemake.txt, snakemake will look at all available rules in your snakemake file (hello.snake) and look for any a  output matching your requirement. It check then for correponding required input. If the input is there, only 1 rule need to be run, if it is not, then snakemake look for another rule to generate that output and if it doesn't exist, it will stop.
 
-Can you infer how many task are necessary to generate the file `SCG_tables.tsv`?
+</p>
+</details>
 
-##### snakemake hand on 
+Let's create an empty file 
+```bash
+touch ~/requirerement.txt
+```
+Now try again with the previous snakemake command.
 
-Let's try to call genes on the low resolution assembly:
+###  Wildcards
+ Wildcards are keywords between {} used to make rule more general and applicable to multiple situations.
+Here we could apply it to make it possible to create a file anywhere on the vm:
 
-    cd Strain_resolution
-    mkdir snakemake
-    cd snakemake
-    nano prodigal.snake
-Paste the previous rule and replace input by `STRONG_run/assembly/spades/assembly.fasta` 
-Replace output with `STRONG_run/annotation/assembly.faa/fna/gff`
+```bash
+rule Hello_world:
+    input: "~/requirerement.txt"
+    output: "{path}/snakemake.txt"
+    shell: "echo HELLO WORLD > {output}"
+```
+Let's try this new version:
 
-    cd ~/Strain_resolution
-    snakemake -s snakemake/prodigal.snake STRONG_run/annotation/assembly.faa -n -r
-Then 
-
-    snakemake -s snakemake/prodigal.snake STRONG_run/annotation/assembly.faa
-
-Nothing is happening. Why?
-Try again with 
-
-    snakemake -s snakemake/prodigal.snake STRONG_run/annotation/assembly.faa -R prodigal
-
-**Additional rule entry**
-
+```bash
+snakemake -s hello.snake ~/data/mydatalocal/snakemake.txt
+``` 
+### Additional rule entries
 -   threads : number of threads the rule needs, default = 1
 -   log file
 -   params : additional parameters
@@ -92,41 +96,213 @@ Try again with
 -   message : message printed during execution
 -   priority : allow to encourage execution of certain task before others
 
-**Wildcards** Wildcards are keywords between {} used to make rule more general and applicable to multiple situations.
-
+Example:
+```bash
+rule Hello_world:
+    input: "~/requirerement.txt"
+    output: "{path}/snakemake.txt"
+    threads: 100
+    log: "{path}/log_hello.txt"
+    message: "generating a hello world message"
+    shell: "echo HELLO WORLD > {output} 2>{log}"
 ```
-rule prodigal:
-    input: "{genome}.fasta"
-    output: faa="{genome}.faa",
-            fna="{genome}.fna",
-            gff="{genome}.gff"
-    params: mode=PRODIGAL_MODE
-    log:    "{genome}.log"
-    shell:
-        "prodigal -i {input} -a {output.faa} -d {output.fna} -f gff -o {output.gff} -p {params.mode} &>> {log}"
+What does happen if threads is bigger than available cores on the vm? 
 
+## Hand on snakemake
+### desiging a rule
+For a set task, identify files you want snakemake to keep track of
+
+- as input: files you absolutely need to have before starting the task
+- as output: files you will need for other rules/ files you want snakemake to check for completion/files you may want to ask snakemake to generate.
+
+If you ever want to use wildcards be sure that all wildcards in input cat be derived from wildcards in output. Snakemake need to be able to identify input from looking at ouput.
+
+### Assembly
+
+We are now good to go with translating previous commands into a snakemake file. Let's start with the creation of files for megahit. The best way to proceed is to copy and paste previous command lines and build around it. First let's have a go at creating the R1.csv and R2.csv.
+Start from 
+```bash
+ls $DATA/AD_small/*/*R1.fastq | tr "\n" "," | sed 's/,$//' > R1.csv
+ls $DATA/AD_small/*/*R2.fastq | tr "\n" "," | sed 's/,$//' > R2.csv
+```
+Let's all agree on working on a file called: "binning.snake"
+<details><summary>Try for yourself for 5 min before looking here. </summary>
+<p>
+
+```bash
+rule create megahit_files:
+    output: R1 = "{path}/R1.csv",
+            R2 = "{path}/R2.csv"
+    params: data = "/var/autofs/ifb/public/teachdata/ebame/Quince-data-2021/Quince_datasets/AD_small"
+    shell:"""
+        ls {params.data}/*/*R1.fastq | tr "\n" "," | sed 's/,$//' > {output.R1}
+        ls {params.data}/*/*R2.fastq | tr "\n" "," | sed 's/,$//' > {output.R2}
+         """
+```	
+
+To note:
+ - I use param to store the path info, it makes things clearer. 
+ - I don't need to place the R1.csv to any particular place, snakemake will guess what {path} needs to be from when it will need to generate that file
+
+</p>
+</details>
+
+#### Megahit
+Let's do the same with megahit.
+Please translate that command line:
+```bash
+megahit -1 $(<R1.csv) -2 $(<R2.csv) -t 4 -o Assembly
 ```
 
+<details><summary>Try for yourself for 5 min before looking here. </summary>
+<p>
 
-{genome} can be replaced by a file name, or a path.
+```bash
 
-    cd  STRONG_run/annotation/
-    ln -s ../assembly/spades/assembly.fasta .
-    cd 
-    cd Strain_resolution/snakemake
-    nano prodigal_MK2.snake
-Paste the previous rule and without any change,
+rule megahit:
+    input: R1 = "{path}/R1.csv",
+           R2 = "{path}/R2.csv"
+    output: "{path}/Assembly/final.contigs.fa"
+    params: "{path}/Assembly"
+    threads: 4
+    shell: "rm -r {params} && megahit -1 $(<{input.R1}) -2 $(<{input.R1}) -t {threads} -o {params}"
+```
 
-    cd  
-    cd Strain_resolution
-    snakemake -s snakemake/prodigal.snake STRONG_run/annotation/assembly.faa -n -r
+To note
 
-Why does it work? Why the symbolic link?
+-  wildcards defined in input output can also be used in the params
+- If there is multiple input you can name them and refers to them.
+- snakemake will create himself the directory Assembly, this is a problem as megahit throws an error when the directory already exist.
+- we specify the number of threads for megahit
+</p>
+</details>
+
+#### Read mapping
+Same as before please translate the following:
+```bash
+bwa index final.contigs.fa
+bwa mem -t 4 Assembly/final.contigs.fa $file $file2 | samtools view -b -F 4 - | samtools sort - > ${stub}.mapped.sorted.bam
+```
+<details><summary>Clue: do not write loop, try to write it for a unique sample. Snakemake will loop for you.</summary>
+<p>
+
+```bash
+rule index_assembly:
+    input: "{path}/final.contigs.fa"
+    output: "{path}/index.done"
+    shell:"""
+          bwa index {input}
+          touch {output}
+          """
+```
+To note:
+
+- here we use a bogus file for snakemake to track completion of index, if file exist, snakemake know index is done: you don't always need to let snakemake keep track of all your files.
+
+```bash
+rule map_reads:
+    input: R1 = "/var/autofs/ifb/public/teachdata/ebame/Quince-data-2021/Quince_datasets/AD_small/{sample}/{sample}_R1.fastq",
+           R2 = "/var/autofs/ifb/public/teachdata/ebame/Quince-data-2021/Quince_datasets/AD_small/{sample}/{sample}_R1.fastq",
+           index = "{path}/Assembly/index.done",
+           assembly = "{path}/Assembly/final.contigs.fa"
+    output: "{path}/Map/{sample}.mapped.sorted.bam"
+    threads: 4
+    shell: "bwa mem -t {threads} {input.assembly} {input.R1} {input.R2} | samtools view -b -F 4 - | samtools sort  - > {output}"
+```
+To note:
+
+- there are way to use python in snakemake to reduce the length of input.R1. Asks if you are not already confused by everything else :)
+- here we have 2 wildcards at the same time, sample and path. The critical part is for both to be present in output. If they are in input but not output, snakemake can't replace them.
+- this rule will be called once per sample, you can chose to use threads: 4, in this case only 1 map_reads task will be run at the time, or you can use threads: 1, and in this case there will be no parallelisation with bwa.
+
+</p>
+</details>
+
+### Sanity check
+Have a try at running current snakemake. 
+Let's generate 1 sample .bam file
+
+```bash
+snakemake -s binning.snake ~/data/mydatalocal/AD_snakemake/Map/sample1.mapped.sorted.bam --cores 4 --dry-run
+```
+If you are not under attack of multiple errors message, snakemake will have listed the series of task it plan to execute. That is the point of the "dry-run" option.
+
+Please add the errors messages you observe on slack so we can try to explain what they mean.
+
+<details><summary>If you are late, or you can't debug your snakemake </summary>
+<p>
+Use the file stored at:
+
+    ~/repos/Ebame21-Quince/binning.snake
+
+</p>
+</details>
+
+### Coverage
+The next command line is a bit troublesome to translate into snakemake since we will need some python coding skill.
+```bash
+jgi_summarize_bam_contig_depths --outputDepth depth.txt *.bam
+```
+We need to list all .bam file, one for each sample as input. First let's list all sample name with a python one-liner. Please copy these lines in the binning.snake file. 
 
 
-### To go further
+```python
+# import functions from basic python library
+import glob 
+from os.path import basename,dirname
+
+# create a string variable to store path
+DATA="/var/autofs/ifb/public/teachdata/ebame/Quince-data-2021/Quince_datasets/AD_small"
+# use the glob function to find all R1.fastq file in each folder of DATA
+# then only keep the directory name wich is also the sample name
+SAMPLES = [basename(dirname(file)) for file in glob.glob("%s/*/*_R1.fastq"%DATA)]
+```
+This create a list named SAMPLES, containing the name of each sample. 
+We create the snakemake rule:
+
+```bash
+rule generate_coverage:
+	input: expand("{{path}}/Map/{sample}.mapped.sorted.bam",sample=SAMPLES)
+	output: "{path}/Binning/depth.txt"
+	shell: "jgi_summarize_bam_contig_depths --outputDepth {output} {input}"
+```
+To note:
+
+- we use the function expand, it allows to create a list of element. Here {sample} will be replaced by element of SAMPLES. We need to use double {{}} on path, so that expand doesn't try to replace it.
+- you may want to use bash pattern matching here as in *.bam, but that won't work. Snakemake run that command before any task is run and before any .bam exist. Thus no bam file will be detected
+
+### Binning
+This one is comparatively easy to translate and use tricks we've went through before, try having a go:
+```bash
+metabat2 -i Assembly/final.contigs.fa -a Binning/depth.txt -t 4 -o Binning/Bins/Bin
+```
+
+<details><summary>solution </summary>
+<p>
+
+```bash
+rule metabat2:
+    input: asmbl = "{path}/Assembly/final.contigs.fa",
+           cov = "{path}/Binning/depth.txt"
+    params: "{path}/Binning/Bins/bin"
+    output: "{path}/Binning/metabat2.done"
+    threads: 4
+    shell: """
+    metabat2 -i {input.asmbl} -a {input.cov} -t {threads} -o {params}
+    touch {output}
+    """
+```
+</p>
+</details>
+
+
+### To go further/summary
 
 -   Snakemake works in reverse, it start from the specified output and looks for rules/recipes able to generate it. It try also multiple wildcards values until it find a way to generate the output.
 -   As a snakemake grow bigger, ambiguity in rules may pop up : 2 rules with the same output. And thus, 2 rules/recipe to create the same input. To solve this issue, you need to restrict your rules making them less universal, either a specific path (prodigal/{genome.gff}), or a specific filename [genome}_prodigal.gff. You can also constrain wildcards or specify a priority of rules.
--   Snakemake will resolve the sequence of rules execution before starting --> if you don't know beforehand the number of files generated, it makes things more complicated. The solution is to use flags, to execute multiple independant snakemake or to use checkpoints
+-   Snakemake only keep track of files specified in "input" and "output". A bad way to do snakemake is to have rules generating untracked files and just outputing a flag.
 
+-   Snakemake will resolve the sequence of rules execution before starting --> if you don't know beforehand the number of files generated, it makes things more complicated. You can: 
+	- Split your snakemake in multiple independant pipeline, so that at the start of the subsequent snakemake the first one is done and the number of file is known.
+	- Use a more complex snakemake concept: checkpoints. 
+	- Stop using snakemake to monitors theses files. Don't refers to them explicitely in input/output. Instead create emtpy "flag" at the end of a rule execution and have snakemake take that as input/output. You loose however restarts/incomplete perks of snakemake and flag file do not mesh well with restart/touch mechanisms.
