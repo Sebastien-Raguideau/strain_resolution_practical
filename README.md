@@ -1,23 +1,34 @@
 
 # Practical : Strain resolution
 
-Please connect using the option -Y. 
-
-    ssh username@ip -Y
+Plan for the session:
+- learn how to launch the STRONG pipeline
+- learn the main step of the analysis, and it's expected output
+- (time dependant) introduction to snakemake and how to create your own pipeline
 
 ##  STRONG - Strain Resolution ON Graphs
+
+### Overview
+
+![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/STRONG_overview.png)
+Steps
+1. ***assembly***: Runs just the assembly steps
+2. ***graphextraction***: Runs just the graph extraction
+3. ***bayespaths***: Runs just the bayespaths
+4. ***results***:  Runs just the results steps
+
 STRONG resolves strains on assembly graphs by resolving variants on core COGs using co-occurrence across multiple samples.
 
-###  STRONG : quickstart
+###  Before starting
 #### Installation
 STRONG is already installed on your VM, you will find the git repos at : 
-`/home/student/repos/STRONG`
+`~/repos/STRONG`
 It is a clone of the one available online and installation steps are detailed [there](https://github.com/chrisquince/STRONG).
 
 **Packages needed**:
 Current installation depend entirely on [conda](https://docs.conda.io/en/latest/), by creating an environment where all packages and their dependencies are installed. 
 
-Look at : `/home/student/repos/STRONG/conda_env.yaml`
+Look at : `~/repos/STRONG/conda_env.yaml`
 
 Bowtie2 is a dependencies, it has been installed, try :
 
@@ -37,412 +48,339 @@ Try activating the relevant conda environment :
 **Databases**
 
  - [COG database](ftp://ftp.ncbi.nlm.nih.gov/pub/mmdb/cdd/little_endian) , you will find it installed at
-    `/home/student/databases/rpsblast_cog_db`
+    `/media/penelopeprime/Metagenomics-Nov21/Day4/rpsblast_cog_db`
 
  - (optional) [GTDB](https://pubmed.ncbi.nlm.nih.gov/30148503/) , used
    with gtdb-tk, (77Gb) takes way more than 20Gb ram on execution.
 
 #### Dataset
-[Sharon&al 2012](https://pubmed.ncbi.nlm.nih.gov/22936250/): [Infant gut metagenomes](https://ebitutorial.s3.climb.ac.uk/Data.tar.gz), first metagenomic time series
-Dataset path : 
+Anaerobic digester metagenomic time series subsampled for this tutorial, reads mapping only to a few bins of interest.
+Please download and extract the dataset using this link: 
+```bash
+cd ~/Data
+wget http://seb.s3.climb.ac.uk/strain_practial_data.tar.gz
+tar -xvf strain_practial_data.tar.gz
+```
+ Look inside a read file with nano, less, head, tail, more or any such:
 
-    /home/student/datasets/infant_gut
+<details><summary>How to count the number of reads?</summary>
+<p>
 
-Check the number of reads :
+ ```bash
+echo $(cat ~/Data/AD_small/sample1/sample1_R1.fastq | wc -l )/4| bc
+  ```
 
-       zcat sample1_R1.fastq.gz |wc -l
+Can you understand what each program does here, cat, wc, bc?
 
+while not exhaustive, have a look at cheatsheets for bash [commands](https://cheatography.com/davechild/cheat-sheets/linux-command-line/) , or bash [scripting](https://devhints.io/bash). 
+</p>
+</details>
 
-STRONG will look for samples in the directory specified by the **data** parameter, inside this directory subdirectories should be present named sample1, ..., sampleN these correspond to different samples. The program will expect sequencing reads present in each subdirectory 'sampleX' with file names 'sampleX_R1.fq.gz' and 'sampleX_R2.fq.gz' for the forward and reverse reads. These are assumed paired, other file formats e.g. not gzipped should also work. In the sample test data used above eight samples are used.
+#### Additional files
+Please download this repos which contains some intermediary results, scripts and files needed for this session.
+```bash
+cd ~/repos
+git clone https://github.com/Sebastien-Raguideau/strain_resolution_practical.git
+```
+Some part of STRONG are a bit too slow and we will have to work with pre-run results. Please download and extract theses files:
+```bash
+cd ~/repos/strain_resolution_practical
+wget **********
+tar -xvf *****
+```
 
-This is a bit unwieldy and we are changing this in the next version of STRONG.
-
-
-#### Launching STRONG :  config file
+### Launching STRONG :  config file
 To use STRONG, you need to create a config file which is  used to store the parameters of a run. It is divided into  sections with parts corresponding to the different steps of the pipeline.
 
-Here is a template config file. 
+Let's create a working directory, and copy the config file template:
 
+```bash
+mkdir -p ~/Projects/STRONG_AD
+cd ~/Projects/STRONG_AD
+cp ~/repos/strain_resolution_practical/config_template.yaml config.yaml
 ```
-# ------ Samples ------
-samples: '*' # specify a list samples to use or '*' to use all samples
-data:  ?  # path to data folder
-
-# ------ Resources ------
-threads : 8 # single task nb threads
-
-# ----- Annotation database -----
-cog_database: ? # COG database
-
-# ----- Binning parameters ------
-concoct:
-    contig_size: 1000
-
-# ------ Assembly parameters ------ 
-read_length: ?
-assembly: 
-    assembler: spades
-    k: [?]
-    mem: ?
-    threads: 24
-
-# ----- BayesPaths parameters ------
-bayespaths:
-    nb_strains: 5
-    nmf_runs: 1
-    max_giter: 1
-    min_orf_number_to_merge_bins: 10
-    min_orf_number_to_run_a_bin: 10
-    percent_unitigs_shared: 0.1
-
-# ----- DESMAN parameters ------
-desman:
-    execution: 1
-    nb_haplotypes: 10
-    nb_repeat: 5
-    min_cov: 1
+Look at the config.yaml with more:
 ```
+more config.yaml
+```
+For 5-10 mins try to use the STRONG [documentation](https://github.com/chrisquince/STRONG) to fill this config file. Edit the config file with nano.
 
-<details><summary> All config file options</summary>
+Check that your config file works with the dryrun command.
+```bash
+cd  ~/Projects/STRONG_AD
+STRONG --config config.yaml STRONG_OUT assembly --threads 8 --dryrun --verbose
+```
+<details><summary>Is something wrong with your config file?</summary>
 <p>
 
-### ------ Samples ------
-**samples**:  specify a list samples to use or \"\*\" to selects all samples
-**data:**   path to data folder
+Debuging a config file:
+ - First it has to be a valid .yaml file, [here](https://en.wikipedia.org/wiki/YAML) is the format definition and [here](http://www.yamllint.com/) is a validator. In short, don't forget indentations or colons. 
+ - you only have 2 paths to fill the path to the sample **folder** and the path to the cog database. If you have issues, you may have mispellled any of these. Use the  `ls`   command to check the path exists.
+ - the cog database path is ``/media/penelopeprime/Metagenomics-Nov21/Day4/rpsblast_cog_db``
+ - the data folder path is:  `~/Data/AD_small`
+ <details><summary>It's still not working? </summary>
+<p>
 
-### ------ Resources ------
-**threads :** 8  single task nb threads
+Well, we can't spend too long on debugging everybody, just copy and paste the correct config file from the strain_practical repo.
 
-### ----- Annotation database -----
-**cog_database:**  # COG database
-
-### ----- Binning parameters ------
-**concoct**:
-&nbsp;&nbsp;&nbsp;&nbsp;**contig_size**: mininum contig length for the CONCOCT binning defaults to 1000 
-&nbsp;&nbsp;&nbsp;&nbsp;**fragment_size**: size at which contigs are fragmented for CONCOCT inputs defaults to 10000
-&nbsp;&nbsp;&nbsp;&nbsp;**bin_multiplier**: the program calculates the median SCG number and then multiplies 
-by this value to get the initial bin number for CONCOCT, defaults to 3 
-&nbsp;&nbsp;&nbsp;&nbsp;**bin_max**: maximum initial bin number for CONCOCT defaults to 2000 reduce this to speed up the CONCOCT binning
-
-***mag_quality_threshold***: fraction of SCGs in single-copy for a bin to be considered a MAG, should be set between 0 and 1, defaults to 0.75, a higher value will give higher quality MAGs
-
-### ------ Assembly parameters ------ 
-**read_length**:  read length used for sequencing 
-**assembly:** 
-&nbsp;&nbsp;&nbsp;&nbsp;    **assembler**: program for coassembly currently only metaSPAdes is supported specify as ***spades*** which is also the default
-&nbsp;&nbsp;&nbsp;&nbsp;    **k**:  kmer length for assembly 77 is a good choice for 150 bp reads. It is possible to use a list of 
-kmers here but they should all be odd so for instance '[33,55,77]' defaults to [21, 33, 55]
-&nbsp;&nbsp;&nbsp;&nbsp;    ***mem***: This is the maximum memory allocated to metaSPAdes in Gb defaults to 120 
-for complex data sets:
-&nbsp;&nbsp;&nbsp;&nbsp;    ***threads***: The number of threads used by metaSPAdes defaults to 16
-
-
-
-### ----- BayesPaths parameters ------
-**bayespaths:**
-&nbsp;&nbsp;&nbsp;&nbsp; ***nb_strains****: initial strain number in a MAG prior to automatic relevance determination, this is the maximum number that can be resolved per MAG, defaults to 16
-&nbsp;&nbsp;&nbsp;&nbsp; ***nmf_runs***: number of initialisation using NMF 
-&nbsp;&nbsp;&nbsp;&nbsp; ***min_orf_number_to_merge_bins***: The number of overlapping ORFs that triggers bin merging defaults to 10
-&nbsp;&nbsp;&nbsp;&nbsp; **percent_unitigs_shared***: Fraction of unitigs shared that cause ORFs to be flagged as overlapping defaults to 0.1
-&nbsp;&nbsp;&nbsp;&nbsp; ***min_orf_number_to_run_a_bin***:  After removing shared orfs, what minimum number of orfs is needed to run BayesPath 
-&nbsp;&nbsp;&nbsp;&nbsp;  ***max_giter***: number of iterations of SCG filtering defaults to 4
-   
-
-### ----- DESMAN parameters ------
-**desman:**
-&nbsp;&nbsp;&nbsp;&nbsp; ***execution***: determines whether the DESMAN steps will be run 0 or 1, defaults to 0
-&nbsp;&nbsp;&nbsp;&nbsp; ***nb_haplotypes***: maximum number of DESMAN haplotypes defaults to 10
-&nbsp;&nbsp;&nbsp;&nbsp; ***nb_repeat***: repeats for the Gibbs sampler per haplotype defaults to 5
-&nbsp;&nbsp;&nbsp;&nbsp; ***min_cov***: minimum coverage for a sample to be used defaults to 1
+```bash
+cd ~/Projects/STRONG_AD
+cp  ~/repos/strain_resolution_practical/config_correct.yaml config.yaml
+```
 
 </p>
 </details>
-
-Let's create a working directory for STRONG:
-
-    mkdir -p "/home/student/Strain_resolution/STRONG_run"
-    cd /home/training/Strain_resolution/
-And an empty config file
-
-    nano config.yaml
-
-
-**Questions:** 
-Copy previous template and fill the "?"
-
-What are the consequence of a small or high K value for the assembly? How should we chose K? [answer](https://github.com/rrwick/Bandage/wiki/Effect-of-kmer-size)
-
-<details><summary>command line help</summary>
-<p>
-
-nb of cpu : `lscpu`
-
-ram availlable : `free -h`
-
-length of reads : `zgrep -v "@" -m 1 sample1_R1.fastq.gz |wc -c`
-
 </p>
 </details>
 
-##### STRONG command lines
-STRONG should be run from within the STRONG repository, however you can symlink it into your path.
+When using the dryrun option what happens? 
 
-    ll $(which STRONG)
-
-We are now ready to run STRONG, let's look at the help:
-
-    STRONG -h
-
-The required argument are an output directory, and a config file. You can also specify a step to run. Try the following command:
-
-    STRONG /home/student/Strain_resolution/STRONG_run assembly --threads 4 --config config.yaml --verbose --dryrun
-
-**Questions:** 
-What is happening?
-
-To launch it for real, remove "assembly" and "--dryrun"
-<details><summary>In depth STRONG commands</summary>
-<p>
-Basic STRONG commands : 
+### Assembly
+Let's launch STRONG for real this time:
+```bash
+cd ~/Projects/STRONG_AD
+STRONG --config config.yaml STRONG_OUT assembly --threads 8
 ```
-STRONG outputdir --config config.yaml
+We only ran the first step of STRONG, the assembly step, it does consist of more than 150 tasks 
+![Assembly step](https://github.com/chrisquince/STRONG/blob/master/Figures/Dag_rules1.png
+) 
+
+This should take about twenty minutes. We are not waiting for that instead let's have a look at preruns.
+
+```bash
+cd ~/Projects/STRONG_AD
+ln -s ~/repos/strain_resolution_practical/prerun ./STRONG_prerun
 ```
-This will run all steps generate output in ***outputdir*** and search for the config yaml in ***outputdir*** if the config file is not specified : you can shorten the command line if you create the config file inside ***outputdir*** .
+Let's have a look at the diferent outputs:
+#### Coassembly
 
-It is also possible to run just part of the pipeline:
-
-1. ***assembly***: Runs just the [assembly steps](#assembly)  
-2. ***graphextraction***: Runs just the [graph extraction](#graphextraction)
-3. ***bayespaths***: Runs just the [bayespaths](#bayespaths)
-4. ***evaluation***:  Runs just the [evaluation steps](#evaluation)
-5. ***results***:  Runs just the [results steps](#results)
-6. ***desman***:  Runs just the [desman steps](#desman)
-
-By specifying desired step e.g.:
-```
-STRONG outputdir --config config.yaml bayespaths
+```bash
+cd  ~/Projects/STRONG_AD/STRONG_prerun
+ls -lh assembly/spades/contigs.fasta
 ```
 
-This is useful if for example you wish to rerun strain resolution with alternate parameters then similarly remove the bayespaths directory and rerun as above.
+How good is the coassembly, what is the N50?
 
-The program also takes the following optional parameters:
-
-```
-  --threads THREADS, -t THREADS
+```bash
+~/repos/strain_resolution_practical/scripts/contig-stats.pl < ./assembly/spades/contigs.fasta
 ```
 
-Specify the maximum thread number to be used.
+sequence #: 1966	total length: 6377796	max length: 174676	N50: 28942	N90: 3000
 
-```
-  --verbose, -v         Increase verbosity level
-```
+#### Assembly graph
+Other useful things to look at include the simplified graph that will be used for strain resolution. This can be visualised with Ryan Wick's excellent [Bandage](https://github.com/rrwick/Bandage) program:
 
-Useful to obtain more info from SnakeMake
 
-```
-  --dryrun, -n          Show tasks, do not execute them
+```bash
+ls -l -h assembly/high_res/simplified.gfa
 ```
 
-Again snakemake command to list commands that would be run not to actually execute them.
+![Simplified](./Figures/Simplified.png) 
 
-
-```
-  --unlock, -u          Unlock the directory
-```
-
-Will unlock directories if snakemake fails.
-
-```
-  --dag DAG, -d DAG     file where you want the dag to be stored
-```
-
-Generate diagram of jobs.
-
-
-```
-  -s ...                Pass additional argument directly to snakemake
-```
-
-Enables any additional commands to be passed to snakemake.
-
-</p>
-</details>
-
-### Let's restart
-As the assembly on this dataset may take up to 45 min, we are going to skip it.
-Interrupt your current STRONG run, (ctrl+c)
-Symlink a pre-generated assembly folder to your STRONG_run folder : 
-
-    cd /home/student/Strain_resolution/STRONG_run
-    rm -r assembly
-    ln -s /home/student/repos/strain_resolution_practical/assembly .
-
-Try and relaunch STRONG.
-
-
-## STRONG workflow
-#### overview
-
-![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/STRONG_overview.png)
-Steps
-1. ***assembly***: Runs just the [assembly steps](#assembly)  
-2. ***graphextraction***: Runs just the [graph extraction](#graphextraction)
-3. ***bayespaths***: Runs just the [bayespaths](#bayespaths)
-4. ***evaluation***:  Runs just the [evaluation steps](#evaluation)
-5. ***results***:  Runs just the [results steps](#results)
-6. ***desman***:  Runs just the [desman steps](#desman)
-
-<a name="assembly"/>
-
-### Assembly, COG annotation and binning 
-
-The first step of the pipeline is a coassembly of all samples followed by binning. This involves multiple steps, including mapping with bowtie2 to get coverages and annotations 
-to COGs with RPS-Blast, this is summarised in the figure:
-
-![alt tag](https://github.com/chrisquince/STRONG/blob/master/Figures/Dag_rules1.png)
-
-
-
-This part of the pipeline produces a number of intermediate output files. We detail the key ones here:
-1. ***assembly/spades/***: This directory contains the standard metaSPAdes run including ***assembly.fasta*** the contigs used in MAG construction 
-2. ***assembly/high_res/***: This directory contains the high resolution assembly graph pre- ***graph_pack.gfa*** and post-simplication ***simplified.gfa*** 
-and also ***simplified.mult_prof*** the unitig kmer coverages of the simplified graph across samples
-3. ***annotation***: This directory contains contains the contig ORF predictions and COG annotations with RPS-BLAST
-4. ***binning***: Contains the CONCOCT bins post refinement and merging these are given in ***clustering_gt1000_merged.csv*** as a csv file of contig names 
-with bin assignments together with a list of MAGs satisfying 75% single-copy core genes in single copy ***list_mags.tsv*** 
-
-The list of single-copy core genes are given as COGs in the data file ***SnakeNest/scg_data/scg_cogs_to_run.txt*** as default but this file can be changed.
-
-
-#### The need for a "high resolution assembly graph"
-We are going to extract sugraphs from the assembly graph corresponding to COG0016.
-
-mkdir AssemblyGraphs
-cd AssemblyGraphs
+Why do we use a "high resolution assembly graph"?
  
-Now let's have a look at the assembly graph, low resolution and high resolution.
-
-    mkdir /home/student/Strain_resolution/AssemblyGraphs 
-    cd /home/student/Strain_resolution/AssemblyGraphs 
-
-Extract COG0016 from 3 assembly graph files  using Bandage : 
-use bandage
-	- on `assembly/spades/assembly_graph_with_scaffolds.gfa`, node 8367, distance 0
-	- on `assembly/high_res/graph_pack.gfa`, node 15609757, distance 100
-	- on  `assembly/high_res/simplified.gfa, `node 4713513, distance 50
-
-Example
-
-    Bandage reduce /home/student/Strain_resolution/strong_run/assembly/spades/assembly_graph_with_scaffolds.gfa  NAME_OF_OUTPUT.gfa --scope aroundnodes --nodes 8367 --distance 0
-
-While this will not work on other situtation, we can here concatenate the gfa files as the nodes names are different : 
-
-    cat *.gfa > COG0016_3_assemblies.gfa
-
-Let's now have a look at the resulting graph. Use Bandage to visualize the output
+Using Bandage it is possible to extract part of the assembly graph with a command such as 
+```bash
+ Bandage reduce <INPUT_GRAPH.gfa>  <NAME_OF_OUTPUT.gfa> --scope aroundnodes --nodes <NODE> --distance 0
+```
+I did that for the exact same COG0016 from 3 assembly graph files: 
+- on `assembly/spades/assembly_graph_with_scaffolds.gfa`
+- on `assembly/high_res/graph_pack.gfa`
+- on  `assembly/high_res/simplified.gfa`
 
 ![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/COG0016.png)
 **Questions:** 
-What are the differences between the 3 assemblies graph?
+What are the differences between the 3 assemblies graph? Can you tell which sequence comes from which type of assembly?
 
 On the normal assembly we can see a unique contig, but in reality there are 3 strains. Why is there only 1 contigs?
 
-How would you proceed to reconstruct the 2 strains from theses graphs?
 
-<a name="graphextraction"/>
-<a name="bayespaths"/>
+#### unitig multi sample coverage profile
+And the unitig per sample profiles, these are generated by thread threading reads onto the simplified graph, Sergey Nurk's application ***unitig-coverage*** does this:
 
-### Graph extraction and BayesPaths
+```bash
+tail assembly/high_res/simplified.mult_prof
+```
+#### binning
+This step of the pipeline also does bowtie2 mapping of reads onto contigs to get coverage 
+profiles for binning:
 
-This part of the pipeline extracts the single-copy core genes for each MAG from the simplified HRAG together with the unitig coverage profiles. These then undergo another round of simplification using the MAG coverages as well as potential merging of bins that share unitigs on the SCG subgraphs. These SCGs for each MAG are then run in the BayesPaths strain resolution algorithm. In detail:
+```bash
+head profile/split/coverage.tsv 
+```
 
-![alt tag](https://github.com/chrisquince/STRONG/blob/master/Figures/Dag_rules2.png)
+It also does the actual binning using as default a two step version of CONCOCT although metabat2 is an option:
 
-This section produces a number of outputs:
+```bash
+more binning/concoct/list_mags.tsv
+```
 
-1. ***subgraphs/bin_merged/bin_name/simplif***: directory contains the simplified SCG graphs for each MAG
-2. ***bayespaths/selected_bins.txt***: text file listing MAGs that are run by BayesPaths
-3. ***bayespaths/bin_name***: directory contains the BayesPaths output for each MAG with id bin_name. This contains:
-   1. bin_nameF_Haplo_X.fa: SCG haplotypes for the X strains predicted for this MAG
-   2. bin_nameF_Intensity.csv: the intensities for each strain in each sample (coverage depth/read length) 
-   3. bin_nameF_varIntensity.csv: the variance of the intensities for each strain in each sample (coverage depth/read length) 
-   4. bin_nameF_Divergence.csv: the divergences for each strain, these are proportional to 
-path uncertainties
-   5. bin_nameF_maxPath.tsv: most likely unitig paths for each strain
-   6. bin_nameF_geneError.csv: errors associated with individual SCGs
-   7. bin_nameF_Bias.csv: unitig biases 
-   8. bin_nameF_Precision.csv: unitig precisions
+There should be three MAGs generated for the next steps in the analysis. Can look at 
+SCG frequencies in MAGs:
 
-<a name="evaluation"/>
+```bash
+cd binning/concoct/
 
-### Evaluation
+tr "," "\t" < SCG_table_concoct.csv > SCG_table_concoct.tsv
 
-This section of the pipeline should only be run if known reference genomes are available because this is a benchnarking run with synthetic reads or in vitro mock communities. 
+cp ~/repos/strain_resolution_practical/scripts/COGPlot.R .
 
-<a name="results"/>
+./COGPlot.R -s SCG_table_concoct.tsv -o SCG_table_concoct.pdf
 
-### Results
+```
 
-This part of the pipeline generates results summaries of the MAG strain inference. The steps are detailed below:
-
-![alt tag](https://github.com/chrisquince/STRONG/blob/master/Figures/Dag_rules7.png)
-
-Here is an example of output we obtain on synthetic dataset, where initial strain diversity is known. 
-
-Results consist of :
-
- - summary file : assembly statistics, binning statistics, gtdb annotation (if run)
- - per sample coverage of mags and infered haplotypes
-- A sub-directory is generated for each bin. These contain:
-
-1. A phylogentic trees of strains created on the single-copy genes with a combined heat map of percent sequence identity for the bin, for example:
-
-![alt tag](https://github.com/chrisquince/STRONG/blob/master/Figures/TreeExample24.png)
-
-This will include the Bin consensus contig sequence (Bin_Name) (and alternatives if multiple COGs are present in bin - Bin_Name_nb) and evaluation strains when available. 
+![SCG_table](Figures/SCG_table_concoct.png) 
 
 
 
-2. In the ***graph*** sub-directory gfa files coloured by haplotype. These are viewable with [Bandage](https://rrwick.github.io/Bandage/) the file ***joined_SCG_graph.gfa*** contains all scgs in a single graph and the individual graphs are in the  ***cogs*** subdirectory
 
-![alt tag](https://github.com/chrisquince/STRONG/blob/master/Figures/GraphExample.png)
+## Subgraph Extraction
 
-3. A barchart of the strain intensities in each sample:
+The next step is to extract out and simplify the SCG subgraphs for the actual bayespaths strain finding. We run this as above just change assembly to graphextraction:
 
-![alt tag](https://github.com/chrisquince/STRONG/blob/master/Figures/IntensityExample.png)
+```
 
-There are also combined pdfs in the top level of results ***haplotypes_coverage.pdf***
-and ***haplotypes_tree.pdf***. 
+cd ~/Projects/STRONG_AD
 
-**Questions**
+STRONG --config config.yaml Results graphextraction --threads 8 --verbose
+```
 
- 1. Please open `strong_run/results/Bin_9/graph/joined_SCG_graph.gfa `
-    There are 3 strain on this graph and 1 color per strain, if a unitig
-    is traversed per 2 strains color are merged. Find a node where all 3
-    strain colors can be seen (look near COG0102)
-	   
-   2. Please open `strong_run/results/Bin_9/haplotypes_tree.pdf`
-   what are Bin_9 and Bin_9_nb_2. Why is Bin_9_nb_2 so different? 
+Can look at the results which are again in gfa format:
 
-<a name="desman"/>
+```
+cd Results/subgraphs/bin_merged
+```
 
-### DESMAN
+Which are again in gfa format with coverages, the raw subgraph unitigs match to the original simplified gfa but the simplified do not:
 
-This section runs the [DESMAN](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-017-1309-9) program on each MAG to infer strains using variant frequencies across samples obtained from read mapping. This can be viewed as a complement to the BayesPaths algorithm and a validation of its predictions. The detailed pipeline is:
+![Select](./Figures/Select.png) 
 
-![alt tag](https://github.com/chrisquince/STRONG/blob/master/Figures/Dag_rules4.png)
+## BayesPaths
 
-The DESMAN steps are parametrised by the following options in the ***desman*** subsection of the config yaml:
+These steps generate all the input required for the strain resolving algorithm BayesPaths. This can be run automatically within STRONG but we do a few trial runs to better understand the inputs first. Let's test out the most complex bin Bin_2 in my run:
+
+```
+wc Bin_*/simplif/*0060*tsv
+```
+
+COG0060 for this MAG looks like:
+
+![Bin_2 COG0060](Figures/Bin_2_COG0060.png) 
+
+We might estimate this contains three strains, can we confirm that. We will do a trial run of BayesPaths to test this, in a new directory:
+
+```
+cd ~/data/mydatalocal/Projects/STRONG_AD/Results
+mkdir BPTest
+cd BPTest
+```
 
 
 
-This produces outputs in the ***desman*** directory for each MAG there is a sub-directory 
-***bin_name*** which contains:
+Then we will run BayesPaths with a minimum number of NMF iterations and the gene filtering disabled. Type ***bayespaths*** for usage. 
 
-1. ***best_run.txt***: the predicted strain number for the bin format 
-(G,H,R,Err,TauFile)
-where G is the number of haplotypes, H the number that are reliable, Err their mean error and the TauFile points to the best haplotype encodings
-2. ***Run_m_n***: DESMAN run repeat n for m haplotypes
-3. ***Deviance.pdf***: Deviance plot of fit with haplotype number
+```
+usage: bayespaths [-h] [-l [COG_LIST]] [-t [LENGTH_LIST]] [-f [FRAC_COV]]
+                  [-m [MIN_COV]] [-mf [MIN_FRAC_COV]] [-g [STRAIN_NUMBER]]
+                  [--loess] [--no_gam] [--no_ard] [--no_noise] [-i ITERS]
+                  [-nfo NOFOLDS] [-r [READLENGTH]] [-s RANDOM_SEED]
+                  [-e [EXECUTABLE_PATH]] [-u [UNCERTAIN_FACTOR]]
+                  [-nr NMF_ITERS] [-ngf MAX_GITER] [--noscale_nmf]
+                  [--nofilter] [--norun_elbow] [--norelax] [--nobias]
+                  [--bias_type {unitig,gene,bubble}]
+                  [--tau_type {fixed,log,empirical,auto,poisson}]
+                  [--nogenedev]
+                  Gene_dir kmer_length outFileStub
+bayespaths: error: the following arguments are required: Gene_dir, kmer_length, outFileStub
+```
 
-<a name="Synthetic"/>
+Then run:
+```
+ln -s ../subgraphs/bin_merged/Bin_2 Bin_2
+
+cp ~/repos/STRONG/BayesPaths/Data/coreCogs.tsv .
+
+```
+
+and finally bayespaths itself:
+
+```
+
+bayespaths Bin_2/simplif 77 Bin_2_small -r 150 -l Bin_2/selected_cogs.tsv -t coreCogs.tsv -g 8 --nofilter -nr 1 -e ~/repos/STRONG/BayesPaths/runfg_source/```
+
+```
+
+This will take a little time. It should select three strains. We can have a look at the 
+output:
+
+Generate a simple plot of fit:
+
+```
+R
+>Pred <- read.csv('Bin_2_smallF_Pred.csv',header=T)
+>library(ggplot2)
+>png('X.png')
+>qplot(data=Pred,x=X_est,y=X) + geom_smooth() + theme_bw()
+>dev.off()
+>q()
+```
+
+Then visualise plot:
+```
+feh X.png
+```
+
+![X](Figures/X.png) 
+
+```
+grep "COG0060" Bin_2_smallF_maxPath.tsv | sed 's/COG0060_//g' > Bin_2_smallF_maxPath_COG0060.tsv
+python ~/repos/STRONG/BayesPaths/scripts/Add_color.py Bin_2/simplif/COG0060.gfa Bin_2_smallF_maxPath_COG0060.tsv > COG0060_color.gfa
+```
+
+This can be visualised in Bandage on your local machine may be easier
+
+![X](Figures/COG0060_colour.png)
+
+We can also look at the time series of strain abundances: 
+
+```
+cp ~/repos/Ebame21-Quince/scripts/GammaPlot.R .
+R
+>source('GammaPlot.R)
+>q()
+```
+
+![X](Figures/TimeSeries.png)
+
+
+Now run BayesPaths on all three bins will take 20-30mins
+```
+cd /home/ubuntu/data/mydatalocal/Projects/STRONG_AD
+STRONG --config config.yaml Results bayespaths --threads 8 --verbose
+```
+
+We can generate results dir now:
+ 
+```
+STRONG --config config.yaml Results results --threads 8 --verbose
+```    
+
+```
+cd Results/results/Bin_2
+```
+
+Joined graph is useful indicates that we have probably missed a strain on this example, this might be down to not running gene filtering or multiple NMF iterations.
+
+![Bin_2_Joined](Figures/Bin_2_joined_graph.png)
+
+The haplotypes_tree.pdf has a phylogeny of strains and a heatmap giving percent divergences.
+
+
+![Tree_2](Figures/haplotypes_tree.png)
+
+
+![Haplo_cov_](Figures/haplotypes_cov.png)
+
+
+
+
