@@ -10,7 +10,7 @@ Plan for the session:
 
 ### Overview
 
-![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/STRONG_overview.png)
+![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/STRONG_overview.png)
 The STRONG pipeline can be subdivided in these 4 main steps.
 Steps
 1. ***assembly***: coassembly of sample, binning, MAG assessment
@@ -190,7 +190,7 @@ I did that for the exact same COG0016 from 3 assembly graph files:
 - on `assembly/high_res/graph_pack.gfa`
 - on  `assembly/high_res/simplified.gfa`
 
-![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/COG0016.png)
+![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/COG0016.png)
 What are the differences between the 3 assemblies graph? Can you tell which sequence comes from which type of assembly?
 
 On the normal assembly we can see a unique contig, but in reality there are 3 strains. Why is there only 1 contigs?
