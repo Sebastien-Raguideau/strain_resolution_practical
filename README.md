@@ -10,12 +10,13 @@ Plan for the session:
 
 ### Overview
 
-![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/STRONG_overview.png)
+![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/STRONG_overview.png)
+The STRONG pipeline can be subdivided in these 4 main steps.
 Steps
-1. ***assembly***: Runs just the assembly steps
-2. ***graphextraction***: Runs just the graph extraction
-3. ***bayespaths***: Runs just the bayespaths
-4. ***results***:  Runs just the results steps
+1. ***assembly***: coassembly of sample, binning, MAG assessment
+2. ***graphextraction***: extract cogs subgraphs
+3. ***bayespaths***: Use bayespaths to infer strains and coverage
+4. ***results***:  Generate results figures. 
 
 STRONG resolves strains on assembly graphs by resolving variants on core COGs using co-occurrence across multiple samples.
 
@@ -32,14 +33,14 @@ Look at : `~/repos/STRONG/conda_env.yaml`
 
 Bowtie2 is a dependencies, it has been installed, try :
 
-    bowtie2 -h
+    fasttree -h
 <details><summary>not working?</summary>
 <p>
 Try activating the relevant conda environment :
 
     conda env list
     conda activate STRONG
-    bowtie2 -h
+    fasttree -h
 
 </p>
 </details>
@@ -85,8 +86,8 @@ git clone https://github.com/Sebastien-Raguideau/strain_resolution_practical.git
 Some part of STRONG are a bit too slow and we will have to work with pre-run results. Please download and extract theses files:
 ```bash
 cd ~/repos/strain_resolution_practical
-wget **********
-tar -xvf *****
+wget http://seb.s3.climb.ac.uk/STRONG_prerun.tar.gz
+tar -xvf STRONG_prerun.tar.gz
 ```
 
 ### Launching STRONG :  config file
@@ -149,7 +150,7 @@ This should take about twenty minutes. We are not waiting for that instead let's
 
 ```bash
 cd ~/Projects/STRONG_AD
-ln -s ~/repos/strain_resolution_practical/prerun ./STRONG_prerun
+ln -s ~/repos/strain_resolution_practical/STRONG_prerun ./STRONG_prerun
 ```
 Let's have a look at the diferent outputs:
 #### Coassembly
@@ -159,7 +160,8 @@ cd  ~/Projects/STRONG_AD/STRONG_prerun
 ls -lh assembly/spades/contigs.fasta
 ```
 
-How good is the coassembly, what is the N50?
+
+How good is the coassembly, what is the N50? What is a good coassembly?
 
 ```bash
 ~/repos/strain_resolution_practical/scripts/contig-stats.pl < ./assembly/spades/contigs.fasta
@@ -188,8 +190,7 @@ I did that for the exact same COG0016 from 3 assembly graph files:
 - on `assembly/high_res/graph_pack.gfa`
 - on  `assembly/high_res/simplified.gfa`
 
-![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/COG0016.png)
-**Questions:** 
+![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/COG0016.png)
 What are the differences between the 3 assemblies graph? Can you tell which sequence comes from which type of assembly?
 
 On the normal assembly we can see a unique contig, but in reality there are 3 strains. Why is there only 1 contigs?
@@ -220,12 +221,9 @@ SCG frequencies in MAGs:
 
 ```bash
 cd binning/concoct/
-
 tr "," "\t" < SCG_table_concoct.csv > SCG_table_concoct.tsv
-
 cp ~/repos/strain_resolution_practical/scripts/COGPlot.R .
-
-./COGPlot.R -s SCG_table_concoct.tsv -o SCG_table_concoct.pdf
+Rscript ./COGPlot.R -s SCG_table_concoct.tsv -o SCG_table_concoct.pdf
 
 ```
 
@@ -238,17 +236,15 @@ cp ~/repos/strain_resolution_practical/scripts/COGPlot.R .
 
 The next step is to extract out and simplify the SCG subgraphs for the actual bayespaths strain finding. We run this as above just change assembly to graphextraction:
 
-```
-
+```bash
 cd ~/Projects/STRONG_AD
-
-STRONG --config config.yaml Results graphextraction --threads 8 --verbose
+STRONG --config config.yaml STRONG_OUT graphextraction --threads 8 --verbose
 ```
 
 Can look at the results which are again in gfa format:
 
-```
-cd Results/subgraphs/bin_merged
+```bash
+cd STRONG_OUT/subgraphs/bin_merged
 ```
 
 Which are again in gfa format with coverages, the raw subgraph unitigs match to the original simplified gfa but the simplified do not:
@@ -257,9 +253,18 @@ Which are again in gfa format with coverages, the raw subgraph unitigs match to 
 
 ## BayesPaths
 
-These steps generate all the input required for the strain resolving algorithm BayesPaths. This can be run automatically within STRONG but we do a few trial runs to better understand the inputs first. Let's test out the most complex bin Bin_2 in my run:
+These steps generate all the input required for the strain resolving algorithm BayesPaths. As it takes about 20~30 min to run automatically, let's launch it now. 
 
+```bash
+cd ~/Projects/STRONG_AD
+STRONG --config config.yaml STRONG_OUT bayespaths --threads 8 --verbose
 ```
+
+#### Manual version
+Then, let's do a few trial runs to better understand the inputs first. Let's test out the most complex bin Bin_2 in my run:
+
+```bash
+cd STRONG_OUT/subgraphs/bin_merged
 wc Bin_*/simplif/*0060*tsv
 ```
 
@@ -269,8 +274,8 @@ COG0060 for this MAG looks like:
 
 We might estimate this contains three strains, can we confirm that. We will do a trial run of BayesPaths to test this, in a new directory:
 
-```
-cd ~/data/mydatalocal/Projects/STRONG_AD/Results
+```bash
+cd ~/Projects/STRONG_AD/STRONG_OUT
 mkdir BPTest
 cd BPTest
 ```
@@ -295,31 +300,34 @@ bayespaths: error: the following arguments are required: Gene_dir, kmer_length, 
 ```
 
 Then run:
-```
+```bash
 ln -s ../subgraphs/bin_merged/Bin_2 Bin_2
-
 cp ~/repos/STRONG/BayesPaths/Data/coreCogs.tsv .
-
 ```
 
 and finally bayespaths itself:
 
+```bash
+bayespaths Bin_2/simplif 77 Bin_2 -r 150 -l Bin_2/selected_cogs.tsv -t coreCogs.tsv -g 8 --nofilter -nr 1 -e ~/repos/STRONG/BayesPaths/runfg_source/
 ```
 
-bayespaths Bin_2/simplif 77 Bin_2_small -r 150 -l Bin_2/selected_cogs.tsv -t coreCogs.tsv -g 8 --nofilter -nr 1 -e ~/repos/STRONG/BayesPaths/runfg_source/```
-
+This will take a little time. It should select three strains. We can have a look at the output:
+Let's go again to preruns results
+```bash
+cd ~/Projects/STRONG_AD/STRONG_prerun/bayespath/Bin_2
 ```
 
-This will take a little time. It should select three strains. We can have a look at the 
-output:
+Then let's look at the output files:
+#### Bin_2F_Pred.csv
+Bin_2F_Pred.csv contains coverage of unitigs as well as coverage from strain contributions. 
 
-Generate a simple plot of fit:
+Let's generate a simple plot of fit:
 
 ```
 R
->Pred <- read.csv('Bin_2_smallF_Pred.csv',header=T)
+>Pred <- read.csv('Bin_2F_Pred.csv',header=T)
 >library(ggplot2)
->png('X.png')
+>pdf('X.pdf')
 >qplot(data=Pred,x=X_est,y=X) + geom_smooth() + theme_bw()
 >dev.off()
 >q()
@@ -327,14 +335,15 @@ R
 
 Then visualise plot:
 ```
-feh X.png
+evince X.pdf
 ```
 
 ![X](Figures/X.png) 
 
+#### Bin_2F_maxPath.tsv
 ```
-grep "COG0060" Bin_2_smallF_maxPath.tsv | sed 's/COG0060_//g' > Bin_2_smallF_maxPath_COG0060.tsv
-python ~/repos/STRONG/BayesPaths/scripts/Add_color.py Bin_2/simplif/COG0060.gfa Bin_2_smallF_maxPath_COG0060.tsv > COG0060_color.gfa
+grep "COG0060" Bin_2F_maxPath.tsv | sed 's/COG0060_//g' > Bin_2F_maxPath_COG0060.tsv
+python ~/repos/STRONG/BayesPaths/scripts/Add_color.py ../../subgraphs/bin_merged/Bin_2/simplif/COG0060.gfa Bin_2F_maxPath_COG0060.tsv > COG0060_color.gfa
 ```
 
 This can be visualised in Bandage on your local machine may be easier
@@ -344,7 +353,7 @@ This can be visualised in Bandage on your local machine may be easier
 We can also look at the time series of strain abundances: 
 
 ```
-cp ~/repos/Ebame21-Quince/scripts/GammaPlot.R .
+cp ~/repos/strain_resolution_practical/scripts/GammaPlot.R .
 R
 >source('GammaPlot.R)
 >q()
@@ -353,16 +362,11 @@ R
 ![X](Figures/TimeSeries.png)
 
 
-Now run BayesPaths on all three bins will take 20-30mins
-```
-cd /home/ubuntu/data/mydatalocal/Projects/STRONG_AD
-STRONG --config config.yaml Results bayespaths --threads 8 --verbose
-```
-
+### Generate results
 We can generate results dir now:
  
 ```
-STRONG --config config.yaml Results results --threads 8 --verbose
+STRONG --config config.yaml STRONG_OUT results --threads 8 --verbose
 ```    
 
 ```
