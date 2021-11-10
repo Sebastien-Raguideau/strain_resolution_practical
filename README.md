@@ -10,7 +10,7 @@ Plan for the session:
 
 ### Overview
 
-![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/STRONG_overview.png)
+![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/STRONG_overview.png)
 Steps
 1. ***assembly***: Runs just the assembly steps
 2. ***graphextraction***: Runs just the graph extraction
@@ -188,7 +188,7 @@ I did that for the exact same COG0016 from 3 assembly graph files:
 - on `assembly/high_res/graph_pack.gfa`
 - on  `assembly/high_res/simplified.gfa`
 
-![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/COG0016.png)
+![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/COG0016.png)
 **Questions:** 
 What are the differences between the 3 assemblies graph? Can you tell which sequence comes from which type of assembly?
 
