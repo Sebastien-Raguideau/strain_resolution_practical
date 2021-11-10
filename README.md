@@ -355,7 +355,7 @@ We can also look at the time series of strain abundances:
 ```
 cp ~/repos/strain_resolution_practical/scripts/GammaPlot.R .
 R
->source('GammaPlot.R)
+>source('GammaPlot.R')
 >q()
 ```
 
