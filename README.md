@@ -31,7 +31,7 @@ Current installation depend entirely on [conda](https://docs.conda.io/en/latest/
 
 Look at : `~/repos/STRONG/conda_env.yaml`
 
-Bowtie2 is a dependencies, it has been installed, try :
+fasttree is a dependencies, it has been installed, try :
 
     fasttree -h
 <details><summary>not working?</summary>
