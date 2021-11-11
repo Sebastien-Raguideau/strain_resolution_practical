@@ -2,7 +2,7 @@
 
 ## Snakemake
 
-The Snakemake workflow management system is a tool to create **reproducible and scalable** data analyses. Workflows are described via a human readable, Python based language. They can be seamlessly scaled to server, cluster, grid and cloud environments, without the need to modify the workflow definition. Finally, Snakemake workflows can entail a description of required software, which will be automatically deployed to any execution environment.
+The [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow management system is a tool to create **reproducible and scalable** data analyses. Workflows are described via a human readable, Python based language. They can be seamlessly scaled to server, cluster, grid and cloud environments, without the need to modify the workflow definition. Finally, Snakemake workflows can entail a description of required software, which will be automatically deployed to any execution environment.
 
 Alternatives: 
  - [nextflow](https://www.nextflow.io/)
@@ -14,6 +14,7 @@ The user define :
 
 -   a set of rules, which are scripts/command line, encapsuled in a way snakemake can make sense of.
 -   an expected results : a file or a list of files
+-   a list of file requirements
 -   an amount of ressources : number of cpu, memory
 
 Snakemake then devise the succession of rules (script/command) needed to generate the output. If the results cannot be generated from the rules inputed and the files already present in the execution folder, snakemake will let you know and fail.
@@ -56,7 +57,7 @@ nano hello.snake
 
 Then ask snakemake to generate that file:
 ```bash
-snakemake -s hello.snake ~/snakemake.txt
+snakemake -s hello.snake ~/snakemake.txt --cores 1
 ```
 <details><summary>What happens? </summary>
 <p>
@@ -85,7 +86,7 @@ rule Hello_world:
 Let's try this new version:
 
 ```bash
-snakemake -s hello.snake ~/data/mydatalocal/snakemake.txt
+snakemake -s hello.snake ~/Data/snakemake.txt --cores 1
 ``` 
 ### Additional rule entries
 -   threads : number of threads the rule needs, default = 1
