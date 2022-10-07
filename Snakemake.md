@@ -315,7 +315,7 @@ rule megahit:
            R2 = "{path}/R2.csv"
     output: "{path}/Assembly/final.contigs.fa"
     params: "{path}/Assembly"
-    conda: "/home/ubuntu/strain_resolution_practical/conda_env.yaml"
+    conda: "/home/ubuntu/repos/strain_resolution_practical/conda_env.yaml"
     threads: 50
     shell: "rm -r {params} && megahit -1 $(<{input.R1}) -2 $(<{input.R1}) -t {threads} -o {params}"
 ```
