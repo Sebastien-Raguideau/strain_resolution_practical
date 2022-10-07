@@ -178,5 +178,5 @@ Let's write a simple script which will loop through all files of a folder, and o
  
 
 ## To go further
-Numerous resources exists on the internet and this tutorial far from exhaustive. 
+Numerous resources exists on the internet and this tutorial is far from exhaustive. 
 Fell free to look for external resources and in particular, [here](https://devhints.io/bash) is an useful bash cheatsheets.
