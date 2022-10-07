@@ -49,7 +49,7 @@ Try activating the relevant conda environment :
 **Databases**
 
  - [COG database](ftp://ftp.ncbi.nlm.nih.gov/pub/mmdb/cdd/little_endian) , you will find it installed at
-    `/media/penelopeprime/Metagenomics-Nov21/Day4/rpsblast_cog_db`
+    `/home/ubuntu/databases/rpsblast_cog_db`
 
  - (optional) [GTDB](https://pubmed.ncbi.nlm.nih.gov/30148503/) , used
    with gtdb-tk, (77Gb) takes way more than 20Gb ram on execution.
@@ -117,8 +117,8 @@ STRONG --config config.yaml STRONG_OUT assembly --threads 8 --dryrun --verbose
 Debuging a config file:
  - First it has to be a valid .yaml file, [here](https://en.wikipedia.org/wiki/YAML) is the format definition and [here](http://www.yamllint.com/) is a validator. In short, don't forget indentations or colons. 
  - you only have 2 paths to fill the path to the sample **folder** and the path to the cog database. If you have issues, you may have mispellled any of these. Use the  `ls`   command to check the path exists.
- - the cog database path is ``/media/penelopeprime/Metagenomics-Nov21/Day4/rpsblast_cog_db``
- - the data folder path is:  `~/Data/AD_small`
+ - the cog database path is `/home/ubuntu/databases/rpsblast_cog_db`
+ - the data folder path is:  `/home/ubuntu/Data/AD_small`
  <details><summary>It's still not working? </summary>
 <p>
 
