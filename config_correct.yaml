@@ -4,11 +4,11 @@ samples: ['*'] # specify a list samples to use or '*' to use all samples
 # ------ Resources ------
 threads : 8 # single task nb threads
 
-# ------ Assembly parameters ------ 
-data: /home/training/Data/AD_small
+# ------ Path to data  ------ 
+data: /home/ubuntu/Data/AD_small
 
 # ----- Annotation database -----
-cog_database: /media/penelopeprime/Metagenomics-Nov21/Day4/rpsblast_cog_db
+cog_database: /home/ubuntu/databases/rpsblast_cog_db
 
 
 # ----- Binning parameters ------
