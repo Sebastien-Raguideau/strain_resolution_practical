@@ -104,27 +104,27 @@ Type q to  quit.
 
 **Number of line in a file** 
 *wc -l file*
-
+```Bash
     wc -l  GCF_000005845.2_ASM584v2_genomic.fna
-
+```
  
 **Search for a pattern**   
 *grep pattern file*
 **grep** will return any line of the file containing the pattern. 
 Lets try to see if we can find some absurds pattern :
-
+```Bash
     grep GGGGGGGG GCF_000005845.2_ASM584v2_genomic.fna
-
+```
 Which line are they? Lets use the option -n to show the line number corresponding to the pattern.
-
+```Bash
     grep GGGGGGGG GCF_000005845.2_ASM584v2_genomic.fna -n
-
+```
 ### Combination of commands
 You can combine commands by sending the output of a command line as input to a second one using the symbol pipe **|**.
 Lets try to count the number of stop codon in a Fastq file. 
-
+```Bash
     grep TAG GCF_000005845.2_ASM584v2_genomic.fna | wc -l
-
+```
 
 ### Text edition 
 
@@ -132,9 +132,9 @@ Lets try to count the number of stop codon in a Fastq file.
 *Command line > file*
 
 Using the symbol **>** will allow to write the output of previous command into a file. 
-
+```Bash
      grep TAG GCF_000005845.2_ASM584v2_genomic.fna > Codons_TAG.txt 
-
+```
 **Text editors** 
 
 A few text editors are available on the terminal, 
@@ -146,23 +146,23 @@ A few text editors are available on the terminal,
 Legend states that after spending a few months learning how to use them , vim and emacs are fantastic text editors!
 For everyone else, nano exist.
 
-    nano Codons_TAG.txt
-
-
+```Bash
+nano Codons_TAG.txt
+```
 
 **Remove file**  
 *rm file*
 Be careful with this one.
-
-    rm Codons_TAG.txt
-
+```Bash
+rm Codons_TAG.txt
+```
 ### Writing a simple script 
 In Bash you can write simple scripts. You can for instance loop through files and  apply the same treatment. 
 
 Let's write a simple script which will loop through all files of a folder, and output their size. If you see it takes too long, feel free to interrupt it at any time using key combination ctrl + c
 
 ```Bash
-	cd $DATA
+    cd $DATA
     for file in */*
     do 
     	echo $file
