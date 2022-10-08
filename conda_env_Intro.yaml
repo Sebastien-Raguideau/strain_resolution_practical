@@ -1,0 +1,16 @@
+name: LongReads
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - megahit 
+  - seqkit
+  - kraken2 
+  - krona
+  - minimap2
+  - bwa 
+  - metabat2
+  - checkm-genome
+  - samtools
+  - r-base
