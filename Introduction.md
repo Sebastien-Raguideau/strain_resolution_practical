@@ -81,13 +81,29 @@ tar -xvf strain_practial_data.tar.gz
 ## Taxonomic profiling with Kraken2
 
 Our first task it to profile one of the samples with Kraken2. The Kraken2 database is here ~/Databases/MiniKraken. Can you figure out how to run sample1 forward reads through Kraken2 and generate a report using 8 threads - '--use-names' is also a useful flag?
-
+Do this in a new directory Kraken.
 
 <details><summary>spoiler</summary>
 <p>
+mkdir Kraken
+cd Kraken
 kraken2 --db ~/Databases/MiniKraken ~/Data/AD_small/sample1/sample1_R1.fastq --threads 8 --use-names --report kraken_report.txt --output kraken_sample1
 </p>
 </details>
+
+We can visualise the kraken report as a Krona plot:
+
+```
+ktImportTaxonomy -q 1 -t 5 kraken_report.txt -o kraken_krona_report.html
+```
+
+This html output will have to be downloaded onto your own computer if you want to open it using a browser:
+
+```
+scp ubuntu@xxx.yyy.zzz.vvv:~/Projects/AD_binning/Kraken/kraken_krona_report.html .
+```
+
+![SCG_table](Figures/Krona.png) 
 
 ## Assembly
 
