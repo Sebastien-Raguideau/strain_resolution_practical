@@ -20,7 +20,7 @@ The workflow is quite typical and will involve:
 
 This will involve a collection of different software programs:
 
-1. [kraken](): 
+1. [kraken2](): 
 
 2. [megahit](https://github.com/voutcn/megahit): A highly efficient metagenomics assembler currently our default for most studies
 
@@ -38,12 +38,17 @@ This will involve a collection of different software programs:
 
 ## Getting started (VM, ssh & env)
 
-For this tutorial we will use a VM generated from [EBAME-Quince (2021)](https://biosphere.france-bioinformatique.fr/catalogue/appliance/127/)
-**Please be  sure to use the ifb-core-cloud domain when launching**
 
 Please ssh to your vm using the -Y option so that X forwarding can be done. 
 
     ssh -Y ubuntu@xxx.xxx.xxx.xxx 
+
+
+
+
+```
+conda activate Intro
+```
 
 
 We use a [conda](https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf) env to install all dependencies, you don't need to install anything and all dependencies are available but only inside that environment.   
@@ -56,31 +61,28 @@ Try to check the command line help of megahit
 Conda environment are created as independant environment to everything else, you need to "activate" an environment to be able to access the sets of tools installed inside.
 
     conda env list
-    conda activate STRONG
+    conda activate Intro
     megahit -h
 
 </p>
 </details>
 
 
-# Manual bioinformatic
+# Getting data
 Let's create a Projects directory and work inside:
 
-    mkdir -p ~/data/mydatalocal/AD_binning
+    mkdir -p ~/Projects/AD_binning
+    
+Anaerobic digester metagenomic time series subsampled for this tutorial, reads mapping only to a few bins of interest.
+Please download and extract the dataset using this link: 
+```bash
+cd ~/Data
+wget http://seb.s3.climb.ac.uk/strain_practial_data.tar.gz
+tar -xvf strain_practial_data.tar.gz
+```
 
 ## Assembly
 
-All datasets for this tutorial can be found at 
-
-    /var/autofs/ifb/public/teachdata/ebame/Quince-data-2021/Quince_datasets
-We have here different dataset subsampled so they can run in real time during the workshop.
-We are going to use reads from the AD_small folder. They come from an industrial anaerobic digester study we realised but correspond to only a few MAGs.
-
-For simplification sake, we are going to create a global variable:
-
-    export DATA=/var/autofs/ifb/public/teachdata/ebame/Quince-data-2021/Quince_datasets
-
-**This is a shell dependant command, you need to retype each time you reopen a terminal**
 
 We are going to use megahit for assembly. It is a fast memory efficient metagenomic assembler and particularly usefull for handling large coassembly.
 
@@ -88,9 +90,9 @@ Why would you want to to assembly or coassembly?
 
 Megahit is installed, reads are at 
 
-    $DATA/AD_small
+    ~/Data/AD_small
 
-Bioinformatic is mostly about reading documentation, and looking on the internet how to do things. 
+Bioinformatics is mostly about reading documentation, and looking on the internet how to do things. 
 Use the -h flag on megahit and try to craft a command line to launch the assembly.
 
 <details><summary>spoiler</summary>
@@ -98,8 +100,8 @@ Use the -h flag on megahit and try to craft a command line to launch the assembl
 
 ```bash
 cd ~/data/mydatalocal/AD_binning
-ls $DATA/AD_small/*/*R1.fastq | tr "\n" "," | sed 's/,$//' > R1.csv
-ls $DATA/AD_small/*/*R2.fastq | tr "\n" "," | sed 's/,$//' > R2.csv
+ls ~/Data/AD_small/*/*R1.fastq | tr "\n" "," | sed 's/,$//' > R1.csv
+ls ~/Data/AD_small/*/*R2.fastq | tr "\n" "," | sed 's/,$//' > R2.csv
 megahit -1 $(<R1.csv) -2 $(<R2.csv) -t 4 -o Assembly
 ```
 It should take about 12 mins
