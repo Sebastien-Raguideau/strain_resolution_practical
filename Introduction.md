@@ -192,6 +192,8 @@ do
 done
 ```
 
+The for loop must be pasted as one chunk of text into the terminal or create a small shell script to store commands.
+
 <a name="binning"/>
 
 ## Contig binning
@@ -199,7 +201,7 @@ done
 The first step is to derive coverage from bam files. For this we can use metabat2 script. It takes bam files as inpute produce a table of mean coverage depth and std for each contigs in each sample.
 
 ```bash
-cd ~/data/mydatalocal/AD_binning/Map
+cd ~/Projects/AD_binning/Map
 jgi_summarize_bam_contig_depths --outputDepth depth.txt *.bam
 ```
 
@@ -209,7 +211,7 @@ Make a new subfolder Binning. Move the Coverage file into this and look into cra
 <p>
 
 ```bash
-cd ~/data/mydatalocal/AD_binning
+cd ~/Projects/AD_binning
 mkdir Binning
 mv Map/depth.txt Binning/depth.txt
 metabat2 -i Assembly/final.contigs.fa -a Binning/depth.txt -t 4 -o Binning/Bins/Bin
@@ -232,7 +234,7 @@ A bin is a group of contigs put together from looking at coverage/composition. H
 
 Checkm is an handy automated pipeline which will use marker set specifics to bacteria/Archea to assess contamination/completion.
 ```bash
-cd ~/data/mydatalocal/AD_binning/Binning
+cd ~/Projects/AD_binning/Binning
 checkm lineage_wf Bins/ checkm -x .fa
 ```
 
