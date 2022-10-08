@@ -136,6 +136,8 @@ What is the output of an assembler?
 How good is the assembly?
 How would we estimate the number of organisms in the assembly?
 
+Can you taxonomically classify contigs with kraken?
+
 
 <a name="readmapping"/>
 
