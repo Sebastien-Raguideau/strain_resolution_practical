@@ -377,6 +377,10 @@ python ~/repos/STRONG/BayesPaths/scripts/Add_color.py ../../subgraphs/bin_merged
 ```
 
 This can be visualised in Bandage on your local machine may be easier
+```
+Bandage load COG0060_color.gfa
+```
+
 
 ![X](Figures/COG0060_colour.png)
 
@@ -393,7 +397,9 @@ R
 
 
 ### Generate results
-We can generate results dir now:
+
+
+If the STRONG bayespaths step has finished we can generate results dir now:
  
 ```
 STRONG --config config.yaml STRONG_OUT results --threads 8 --verbose
