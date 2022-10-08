@@ -175,10 +175,10 @@ samtools sort sample1.mapped.bam -o sample1.mapped.sorted.bam
 To run all samples we would place these steps in a shell script:
 
 ```bash
-cd ~/data/mydatalocal/AD_binning
-rm ~/data/mydatalocal/AD_binning/Map/*
+cd ~/Projects/AD_binning
+rm ~/Projects/AD_binning/Map/*
 
-for file in $DATA/AD_small/*/*R1.fastq
+for file in ~/Data/AD_small/*/*R1.fastq
 do 
    
    stub=${file%_R1.fastq}
