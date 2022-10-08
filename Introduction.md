@@ -20,7 +20,7 @@ The workflow is quite typical and will involve:
 
 This will involve a collection of different software programs:
 
-1. [kraken2](): 
+1. [kraken2](https://github.com/DerrickWood/kraken2): A kmer based read profiler 
 
 2. [megahit](https://github.com/voutcn/megahit): A highly efficient metagenomics assembler currently our default for most studies
 
@@ -42,9 +42,6 @@ This will involve a collection of different software programs:
 Please ssh to your vm using the -Y option so that X forwarding can be done. 
 
     ssh -Y ubuntu@xxx.xxx.xxx.xxx 
-
-
-
 
 ```
 conda activate Intro
@@ -68,7 +65,7 @@ Conda environment are created as independant environment to everything else, you
 </details>
 
 
-# Getting data
+## Getting data
 Let's create a Projects directory and work inside:
 
     mkdir -p ~/Projects/AD_binning
@@ -80,6 +77,17 @@ cd ~/Data
 wget http://seb.s3.climb.ac.uk/strain_practial_data.tar.gz
 tar -xvf strain_practial_data.tar.gz
 ```
+
+## Taxonomic profiling with Kraken2
+
+Our first task it to profile one of the samples with Kraken2. The Kraken2 database is here ~/Databases/MiniKraken. Can you figure out how to run sample1 forward reads through Kraken2 and generate a report using 8 threads - '--use-names' is also a useful flag?
+
+
+<details><summary>spoiler</summary>
+<p>
+kraken2 --db ~/Databases/MiniKraken ~/Data/AD_small/sample1/sample1_R1.fastq --threads 8 --use-names --report kraken_report.txt --output kraken_sample1
+</p>
+</details>
 
 ## Assembly
 
