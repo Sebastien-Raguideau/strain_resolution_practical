@@ -1,4 +1,4 @@
-name: LongReads
+name: Intro
 channels:
   - conda-forge
   - bioconda
