@@ -145,24 +145,33 @@ Let's launch STRONG for real this time:
 cd ~/Projects/STRONG_AD
 STRONG --config config.yaml STRONG_OUT assembly --threads 8
 ```
-We only ran the first step of STRONG, the assembly step, it does consist of more than 150 tasks 
+We only started running the first step of STRONG, the assembly step, it consists of more than 150 tasks 
 ![Assembly step](https://github.com/chrisquince/STRONG/blob/master/Figures/Dag_rules1.png
 ) 
 
-This should take about twenty minutes. We are not waiting for that instead let's have a look at preruns.
+This should take about twenty minutes. We are not waiting for that instead kill the strong run using ***Ctrl-C*** and copy in the prerun assembly after cleaning up the output directory:
 
-```bash
-cd ~/Projects/STRONG_AD
-ln -s ~/repos/strain_resolution_practical/STRONG_prerun ./STRONG_prerun
 ```
-Let's have a look at the diferent outputs:
+    cd ~/Projects/STRONG_AD
+    rm -r -f STRONG_OUT
+    mkdir STRONG_OUT
+    cp -r ~/repos/strain_resolution_practical/STRONG_prerun/assembly ~/Projects/STRONG_AD/STRONG_OUT
+```
+
+The restart the assembly step:
+```
+    STRONG --config config.yaml STRONG_OUT assembly --threads 8
+```
+
+Whilst that is running login on a separate terminal so we can look at the assembly output:
+
+
 #### Coassembly
 
 ```bash
-cd  ~/Projects/STRONG_AD/STRONG_prerun
+cd  ~/Projects/STRONG_AD/STRONG_OUT/
 ls -lh assembly/spades/contigs.fasta
 ```
-
 
 How good is the coassembly, what is the N50? What is a good coassembly?
 
