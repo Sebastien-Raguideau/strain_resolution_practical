@@ -99,18 +99,18 @@ Use the -h flag on megahit and try to craft a command line to launch the assembl
 <p>
 
 ```bash
-cd ~/data/mydatalocal/AD_binning
+cd ~/Projects/AD_binning
 ls ~/Data/AD_small/*/*R1.fastq | tr "\n" "," | sed 's/,$//' > R1.csv
 ls ~/Data/AD_small/*/*R2.fastq | tr "\n" "," | sed 's/,$//' > R2.csv
-megahit -1 $(<R1.csv) -2 $(<R2.csv) -t 4 -o Assembly
+megahit -1 $(<R1.csv) -2 $(<R2.csv) -t 8 -o Assembly --k-step 24
 ```
-It should take about 12 mins
+It should take about 10 mins
 </p>
 </details>
 
 What is the output of an assembler?
 How good is the assembly?
-How would we go for estimating the number of organisms in the assembly?
+How would we estimate the number of organisms in the assembly?
 
 
 <a name="readmapping"/>
@@ -136,7 +136,7 @@ produce a sam file 'Map/sample1.sam':
 
 ```bash
     mkdir Map
-    bwa mem -t 4 Assembly/final.contigs.fa $DATA/AD_small/sample1/sample1_R1.fastq $DATA/AD_small/sample1/sample1_R2.fastq > Map/sample1.sam
+    bwa mem -t 4 Assembly/final.contigs.fa ~/Data/AD_small/sample1/sample1_R1.fastq ~/Data/AD_small/sample1/sample1_R2.fastq > Map/sample1.sam
 ```
 </p>
 </details>
