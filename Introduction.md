@@ -221,6 +221,7 @@ metabat2 -i Assembly/final.contigs.fa -a Binning/depth.txt -t 4 -o Binning/Bins/
 
 How many contigs were clustered? 
 ```bash
+cd ~/Projects/AD_binning/Binning/Bins
 grep -c ">" *.fa | awk -F: '{ s+=$2 } END { print s }'
 ```
 How many nucleotide were clustered?
@@ -259,7 +260,7 @@ When doing metagenomic, it happens often that the MAGs you obtain are not in dat
 The gtdb toolkit does that for you:
 
 ```bash
-cd ~/data/mydatalocal/AD_binning/Binning
+cd ~/Projects/AD_binning/Binning
 export GTDBTK_DATA_PATH=ifb/data/public/teachdata/ebame/Quince-data-2021/release202
 gtdbtk classify_wf --cpus 4 --genome_dir Bins --out_dir gtdb --extension .fa --scratch_dir gtdb/scratch
 ```
