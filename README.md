@@ -22,7 +22,7 @@ STRONG resolves strains on assembly graphs by resolving variants on core COGs us
 
 ###  Before starting
 #### Installation
-STRONG is already installed on your VM, you will find the git repos at : 
+STRONG is already installed on your VM, you will find the git repos at: 
 `~/repos/STRONG`
 It is a clone of the one available online and installation steps are detailed [there](https://github.com/chrisquince/STRONG).
 
@@ -31,7 +31,7 @@ Current installation depend entirely on [conda](https://docs.conda.io/en/latest/
 
 Look at : `~/repos/STRONG/conda_env.yaml`
 
-fasttree is a dependencies, it has been installed, try :
+fasttree is a dependency, it has been installed, try :
 
     fasttree -h
 <details><summary>not working?</summary>
@@ -104,7 +104,10 @@ Look at the config.yaml with more:
 ```
 more config.yaml
 ```
-For 5-10 mins try to use the STRONG [documentation](https://github.com/chrisquince/STRONG) to fill this config file. Edit the config file with nano.
+For 5-10 mins try to use the STRONG [documentation](https://github.com/chrisquince/STRONG) to fill in this config file. Edit the config file with nano or vi so that it runs the samples in:
+```
+ ~/Data/AD_small/
+```
 
 Check that your config file works with the dryrun command.
 ```bash
