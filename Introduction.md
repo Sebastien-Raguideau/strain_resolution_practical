@@ -85,9 +85,12 @@ Do this in a new directory Kraken.
 
 <details><summary>spoiler</summary>
 <p>
+```bash
+cd ~/Projects/AD_binning
 mkdir Kraken
 cd Kraken
 kraken2 --db ~/Databases/MiniKraken ~/Data/AD_small/sample1/sample1_R1.fastq --threads 8 --use-names --report kraken_report.txt --output kraken_sample1
+```
 </p>
 </details>
 
