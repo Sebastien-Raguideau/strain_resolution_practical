@@ -79,6 +79,14 @@ tar -xvf strain_practial_data.tar.gz
 Our first task it to profile one of the samples with Kraken2. The Kraken2 database is here ~/Databases/MiniKraken. Can you figure out how to run sample1 forward reads through Kraken2 and generate a report using 8 threads - '--use-names' is also a useful flag?
 Do this in a new directory Kraken.
 
+<details><~~Hint~~>spoiler</summary>
+<p>
+
+ If you don't know how to use Kraken2, type it in the terminal, it will show you which argument are needed. If you can't make sense of what's written, have a look on the internet for the full documention.
+
+ </p>
+</details>
+
 <details><summary>spoiler</summary>
 <p>
 
