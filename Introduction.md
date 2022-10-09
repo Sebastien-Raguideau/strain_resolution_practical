@@ -79,10 +79,10 @@ tar -xvf strain_practial_data.tar.gz
 Our first task it to profile one of the samples with Kraken2. The Kraken2 database is here ~/Databases/MiniKraken. Can you figure out how to run sample1 forward reads through Kraken2 and generate a report using 8 threads - '--use-names' is also a useful flag?
 Do this in a new directory Kraken.
 
-<details><~~Hint~~>spoiler</summary>
+<details><summary>~~Hint~~</summary>
 <p>
 
- If you don't know how to use Kraken2, type it in the terminal, it will show you which argument are needed. If you can't make sense of what's written, have a look on the internet for the full documention.
+ If you don't know how to use Kraken2, type it in the terminal, it will show you which argument are needed. If you can't make sense of what's written, have a look on the internet for the full documentation.
 
  </p>
 </details>
@@ -99,6 +99,8 @@ kraken2 --db ~/Databases/MiniKraken ~/Data/AD_small/sample1/sample1_R1.fastq --t
 
  </p>
 </details>
+How many reads have been classified? Why did this happen?
+If Kraken2 was able to classify all reads. What sort of information does it gives us. Is it the diversity, the accurate number of each organisms?
 
 We can visualise the kraken report as a Krona plot:
 
@@ -117,9 +119,9 @@ scp ubuntu@xxx.yyy.zzz.vvv:~/Projects/AD_binning/Kraken/kraken_krona_report.html
 ## Assembly
 
 
-We are going to use megahit for assembly. It is a fast memory efficient metagenomic assembler and particularly usefull for handling large coassembly.
+We are going to use megahit for assembly. It is a fast memory efficient metagenomic assembler and particularly useful for handling large coassembly or large datasets.
 
-Why would you want to to assembly or coassembly? 
+Why would you want to do an assembly or a coassembly? 
 
 Megahit is installed, reads are at 
 
@@ -145,20 +147,58 @@ What is the output of an assembler?
 How good is the assembly?
 How would we estimate the number of organisms in the assembly?
 
-Can you taxonomically classify contigs with kraken?
+## The return of the Kraken
+We now have an assembly with contigs being quite larger than the initial reads. Let's try to use kraken2 for taxonomic classification.
+Please take some time to modify previous command line to launch Kraken2 on the assembly.
 
+details><summary>spoiler</summary>
+<p>
+
+ ```bash
+echo "Comme on I believe in you, you can change ~/Data/AD_small/sample1/sample1_R1.fastq by the correct path to the assembly (final.contigs.fa)"
+```
+
+details><summary>spoiler</summary>
+<p>
+
+ ```bash
+echo "also be sure to change name of the report and name of the output, otherwise you're going to erase previous results"
+```
+
+details><summary>spoiler</summary>
+<p>
+
+ ```bash
+cd ~/Projects/AD_binning/Kraken
+kraken2 --db ~/Databases/MiniKraken ~/Projects/AD_binning/Assembly/final.contigs.fa --threads 8 --use-names --report kraken_assembly_report.txt --output kraken_assembly
+ktImportTaxonomy -q 1 -t 5 kraken_assembly_report.txt -o kraken_krona_assembly_report.html
+```
+
+ </p>
+</details>
+
+
+ </p>
+</details>
+
+
+ </p>
+</details>
+
+How many contigs have been classified? Why did this happen?
+![SCG_table](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/krona_assembly.png) 
 
 <a name="readmapping"/>
 
 ## Read mapping
 
-What informations can be used to bins contigs?
+What kind of information can be used to bins contigs?
 
 We use bwa mem to map reads to the assembly.
 As preliminary step we need to index the assembly
 
 ```bash
-cd Assembly
+cd ~/Projects/AD_binning/Assembly
 bwa index final.contigs.fa
 cd ..
 ```
@@ -170,8 +210,8 @@ produce a sam file 'Map/sample1.sam':
 <p>
 
 ```bash
-    mkdir Map
-    bwa mem -t 4 Assembly/final.contigs.fa ~/Data/AD_small/sample1/sample1_R1.fastq ~/Data/AD_small/sample1/sample1_R2.fastq > Map/sample1.sam
+mkdir Map
+bwa mem -t 4 Assembly/final.contigs.fa ~/Data/AD_small/sample1/sample1_R1.fastq ~/Data/AD_small/sample1/sample1_R2.fastq > Map/sample1.sam
 ```
 </p>
 </details>
@@ -183,8 +223,9 @@ tail Map/sample1.sam
 
 It is quite a complex [format](https://en.wikipedia.org/wiki/SAM_(file_format))
 
-The sam file is a bit bulky so we never store alignments in this format instead we would convert it into bam. Can you convert this file using 
-'samtools view':
+The sam file is a bit bulky so we never store alignments in this format instead we would convert it into its binary version: bam. Can you convert this file using the command 
+
+    samtools view
 
 
 <details><summary> Convert sam to bam command</summary>
@@ -228,12 +269,13 @@ done
 ```
 
 The for loop must be pasted as one chunk of text into the terminal or create a small shell script to store commands.
+Can you make sense of what that script does? 
 
 <a name="binning"/>
 
 ## Contig binning
 
-The first step is to derive coverage from bam files. For this we can use metabat2 script. It takes bam files as inpute produce a table of mean coverage depth and std for each contigs in each sample.
+The first step is to derive coverage from bam files. For this we can use metabat2 script. It takes bam files as input and produce a table of mean coverage depth and corresponding std for each contigs in each sample.
 
 ```bash
 cd ~/Projects/AD_binning/Map
@@ -282,7 +324,7 @@ Instead you will need to import output pre-generated for this tutorial.
 
 ```bash
 rm -r checkm
-ln -s ~/repos/Ebame21-Quince/checkm.out
+ln -s ~/repos/strain_resolution_practical/Intro_prerun/checkm.tsv .
 ```
 </p>
 </details>
@@ -296,12 +338,21 @@ The gtdb toolkit does that for you:
 
 ```bash
 cd ~/Projects/AD_binning/Binning
-export GTDBTK_DATA_PATH=ifb/data/public/teachdata/ebame/Quince-data-2021/release202
 gtdbtk classify_wf --cpus 4 --genome_dir Bins --out_dir gtdb --extension .fa --scratch_dir gtdb/scratch
 ```
-That will take at least X min.
+That will take at least XXXX min. 
 
+So instead lets have a look at the prerun results.
+```bash
+cd ~/Projects/AD_binning/Binning/checkm
+ln -s ~/repos/strain_resolution_practical/Intro_prerun/*.summary.tsv .
+```
 We obtain multiple files what are they?
-Look at summary files what information can we obtain.
-What is the RED, from gtdb?
 
+Look at summary files what information can we obtain.
+
+```bash
+cut -f1,2,14,19 ~/Projects/AD_binning/Binning/checkm/*.summary.tsv
+```
+
+What is the RED, from gtdb?
