@@ -355,12 +355,12 @@ Let's generate a simple plot of fit:
 
 ```
 R
->Pred <- read.csv('Bin_2F_Pred.csv',header=T)
->library(ggplot2)
->pdf('X.pdf')
->qplot(data=Pred,x=X_est,y=X) + geom_smooth() + theme_bw()
->dev.off()
->q()
+Pred <- read.csv('Bin_2F_Pred.csv',header=T)
+library(ggplot2)
+pdf('X.pdf')
+qplot(data=Pred,x=X_est,y=X) + geom_smooth() + theme_bw()
+dev.off()
+q()
 ```
 
 Then visualise plot:
