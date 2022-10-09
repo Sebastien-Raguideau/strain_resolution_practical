@@ -151,21 +151,21 @@ How would we estimate the number of organisms in the assembly?
 We now have an assembly with contigs being quite larger than the initial reads. Let's try to use kraken2 for taxonomic classification.
 Please take some time to modify previous command line to launch Kraken2 on the assembly.
 
-details><summary>spoiler</summary>
+<details><summary>spoiler</summary>
 <p>
 
  ```bash
 echo "Comme on I believe in you, you can change ~/Data/AD_small/sample1/sample1_R1.fastq by the correct path to the assembly (final.contigs.fa)"
 ```
 
-details><summary>spoiler</summary>
+<details><summary>spoiler</summary>
 <p>
 
  ```bash
 echo "also be sure to change name of the report and name of the output, otherwise you're going to erase previous results"
 ```
 
-details><summary>spoiler</summary>
+<details><summary>spoiler</summary>
 <p>
 
  ```bash
