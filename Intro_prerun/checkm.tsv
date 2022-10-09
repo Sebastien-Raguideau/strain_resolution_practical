@@ -1,0 +1,4 @@
+Bin Id	Marker lineage	# genomes	# markers	# marker sets	0	1	2	3	4	5+	Completeness	Contamination	Strain heterogeneity
+Bin.1	p__Euryarchaeota (UID3)	148	188	125	3	185	0	0	0	0	97.60	0.00	0.00
+Bin.2	p__Euryarchaeota (UID3)	148	187	124	5	181	1	0	0	0	96.37	0.81	100.00
+Bin.3	p__Bacteroidetes (UID2605)	350	316	210	24	290	1	1	0	0	91.37	1.43	25.00
