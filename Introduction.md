@@ -43,10 +43,6 @@ Please ssh to your vm using the -Y option so that X forwarding can be done.
 
     ssh -Y ubuntu@xxx.xxx.xxx.xxx 
 
-```
-conda activate Intro
-```
-
 
 We use a [conda](https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf) env to install all dependencies, you don't need to install anything and all dependencies are available but only inside that environment.   
 
