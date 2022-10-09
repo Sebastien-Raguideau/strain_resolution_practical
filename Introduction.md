@@ -344,6 +344,7 @@ That will take at least XXXX min.
 
 So instead lets have a look at the prerun results.
 ```bash
+mkdir -p ~/Projects/AD_binning/Binning/checkm
 cd ~/Projects/AD_binning/Binning/checkm
 ln -s ~/repos/strain_resolution_practical/Intro_prerun/*.summary.tsv .
 ```
