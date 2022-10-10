@@ -406,14 +406,6 @@ If the STRONG bayespaths step has finished we can generate results dir now:
 STRONG --config config.yaml STRONG_OUT results --threads 8 --verbose
 ```    
 
-Just now we did not run the gtdb part of the pipeline since it takes both too much time and too much ram. To run gtdb you need to add a line inside the config file with the path to gtdb database.
-Instead we are going to have a look at prerun results with gtdb:
-
-```bash
-cd ~/Projects/STRONG_AD/STRONG_OUT
-rm -r results
-ln -s ~/Projects/STRONG_AD/STRONG_prerun/results .
-```
  
 #### Bin specific results
 ```
