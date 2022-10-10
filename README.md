@@ -50,7 +50,7 @@ Try activating the relevant conda environment :
 **Databases**
 
  - [COG database](ftp://ftp.ncbi.nlm.nih.gov/pub/mmdb/cdd/little_endian) , you will find it installed at
-    `/home/ubuntu/databases/rpsblast_cog_db`
+    `/home/ubuntu/Databases/rpsblast_cog_db`
 
  - (optional) [GTDB](https://pubmed.ncbi.nlm.nih.gov/30148503/) , used
    with gtdb-tk, (77Gb) takes way more than 20Gb ram on execution.
