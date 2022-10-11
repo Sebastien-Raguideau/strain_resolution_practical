@@ -12,7 +12,7 @@ cd $REPOS
 wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh
 
 /bin/bash Miniconda3-py38_4.12.0-Linux-x86_64.sh -b -p $REPOS/miniconda3
-conda init
+/home/ubuntu/repos/miniconda3/condabin/conda init
 conda config --set auto_activate_base false
 
 ###### Install STRONG ######
