@@ -66,6 +66,7 @@ Try activating the relevant conda environment :
 Anaerobic digester metagenomic time series subsampled for this tutorial, reads mapping only to a few bins of interest.
 Please download and extract the dataset using this link: 
 ```bash
+mkdir ~/Data 
 cd ~/Data
 wget http://seb.s3.climb.ac.uk/strain_practial_data.tar.gz
 tar -xvf strain_practial_data.tar.gz
