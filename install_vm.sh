@@ -30,7 +30,7 @@ git submodule foreach git pull origin master
 
 # real install
 ./install_STRONG.sh 
-ln -s bin/STRONG $REPOS/miniconda/envs/STRONG/bin/
+ln -s bin/STRONG $REPOS/miniconda3/envs/STRONG/bin/
 
 ###### install env for Intro ######
 cd $REPOS
