@@ -440,8 +440,13 @@ STRONG will run gtdb on MAGs as standard but this is too slow and uses too much 
 
 ```bash
 cd ~/Projects/STRONG_AD/STRONG_OUT
-rm -r resultsJust now
-ln -s ~/Projects/STRONG_AD/STRONG_prerun/results .
+ln -s ~/repos/strain_resolution_practical/STRONG_prerun/results resultsp
+```
+
+Have a look at the summary file to find out the identity of the MAGs.
+
+```
+more summary.tsv
 ```
 
 To run gtdb you need to add a line inside the config file with the path to gtdb database.
