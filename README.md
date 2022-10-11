@@ -451,6 +451,12 @@ more summary.tsv
 
 To run gtdb you need to add a line inside the config file with the path to gtdb database.
 
+## Extra things
+
+Can you run STRONG with metabat2?
+
+Can you taxonomically assign contigs with Kraken?
+
 
 
 
