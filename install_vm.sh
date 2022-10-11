@@ -8,7 +8,7 @@ mkdir -p $REPOS
 cd $REPOS
 wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh
 
-/bin/bash Miniconda3-py38_4.12.0-Linux-x86_64.sh
+/bin/bash Miniconda3-py38_4.12.0-Linux-x86_64.sh -b -p $REPOS/miniconda3
 
 ###### Install STRONG ######
 cd $REPOS
