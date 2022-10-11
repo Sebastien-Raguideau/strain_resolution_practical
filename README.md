@@ -363,12 +363,12 @@ Let's generate a simple plot of fit:
 
 ```
 R
-Pred <- read.csv('Bin_2F_Pred.csv',header=T)
-library(ggplot2)
-pdf('X.pdf')
-qplot(data=Pred,x=X_est,y=X) + geom_smooth() + theme_bw()
-dev.off()
-q()
+>Pred <- read.csv('Bin_2F_Pred.csv',header=T)
+>library(ggplot2)
+>pdf('X.pdf')
+>qplot(data=Pred,x=X_est,y=X) + geom_smooth() + theme_bw()
+>dev.off()
+>q()
 ```
 
 Then visualise plot:
@@ -381,7 +381,7 @@ evince X.pdf
 #### Bin_2F_maxPath.tsv
 ```
 grep "COG0060" Bin_2F_maxPath.tsv | sed 's/COG0060_//g' > Bin_2F_maxPath_COG0060.tsv
-python ~/repos/STRONG/BayesPaths/scripts/Add_color.py ../../subgraphs/bin_merged/Bin_2/simplif/COG0060.gfa Bin_2F_maxPath_COG0060.tsv > COG0060_color.gfa
+python ~/repos/STRONG/BayesPaths/scripts/Add_color.py ./Bin_2/simplif/COG0060.gfa Bin_2F_maxPath_COG0060.tsv > COG0060_color.gfa
 ```
 
 This can be visualised in Bandage on your local machine may be easier
@@ -413,14 +413,6 @@ If the STRONG bayespaths step has finished we can generate results dir now:
 STRONG --config config.yaml STRONG_OUT results --threads 8 --verbose
 
 ```    
-Just now we did not run the gtdb part of the pipeline since it takes both too much time and too much ram. To run gtdb you need to add a line inside the config file with the path to gtdb database.
-Instead we are going to have a look at prerun results with gtdb:
-
-```bash
-cd ~/Projects/STRONG_AD/STRONG_OUT
-rm -r results
-ln -s ~/Projects/STRONG_AD/STRONG_prerun/results .
-```
 
 The summary files gives information on number of mags, strains and taxonomy. Other files shows concatenation of Bin specific results.
 
@@ -441,5 +433,24 @@ The haplotypes_tree.pdf has a phylogeny of strains and a heatmap giving percent 
 
 
 ![Haplo_cov_](Figures/haplotypes_cov.png)
+
+### MAG taxonomy
+
+STRONG will run gtdb on MAGs as standard but this is too slow and uses too much RAM. For now just have a look at the pre-run results: 
+
+```bash
+cd ~/Projects/STRONG_AD/STRONG_OUT
+rm -r resultsJust now
+ln -s ~/Projects/STRONG_AD/STRONG_prerun/results .
+```
+
+To run gtdb you need to add a line inside the config file with the path to gtdb database.
+
+
+
+
+
+
+
 
 
