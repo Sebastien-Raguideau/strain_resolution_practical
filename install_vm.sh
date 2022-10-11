@@ -14,7 +14,18 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh
 /bin/bash Miniconda3-py38_4.12.0-Linux-x86_64.sh -b -p $REPOS/miniconda3
 /home/ubuntu/repos/miniconda3/condabin/conda init
 /home/ubuntu/repos/miniconda3/condabin/conda config --set auto_activate_base false
-source ~/.bashrc
+
+__conda_setup="$('/home/ubuntu/repos/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/ubuntu/repos/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/ubuntu/repos/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/ubuntu/repos/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
 
 ###### Install STRONG ######
 cd $REPOS
@@ -30,7 +41,7 @@ git submodule foreach git pull origin master
 
 # real install
 ./install_STRONG.sh 
-ln -s bin/STRONG $REPOS/miniconda3/envs/STRONG/bin/
+ln -s $REPOS/STRONG/bin/STRONG $REPOS/miniconda3/envs/STRONG/bin/
 
 ###### install env for Intro ######
 cd $REPOS
@@ -70,4 +81,4 @@ sudo apt -y install feh
 sudo apt -y install evince
 
 ###### remove script ######
-rm /home/ubuntu/install_vm.sh
+#rm /home/ubuntu/install_vm.sh
