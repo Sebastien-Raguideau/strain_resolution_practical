@@ -2,6 +2,9 @@
 
 echo "install repos/tools needed for workshop"
 
+###### seb ll -h need accomodation ######
+sed -i 's/ls -alF/ls -lhaF/g' .bashrc 
+
 ###### Install miniconda ######
 export REPOS=$HOME"/repos"
 mkdir -p $REPOS
@@ -9,6 +12,8 @@ cd $REPOS
 wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh
 
 /bin/bash Miniconda3-py38_4.12.0-Linux-x86_64.sh -b -p $REPOS/miniconda3
+conda init
+conda config --set auto_activate_base false
 
 ###### Install STRONG ######
 cd $REPOS
@@ -44,8 +49,8 @@ tar -xvzf rpsblast_cog_db.tar.gz
 rm rpsblast_cog_db.tar.gz
 
 # Kraken 
-cd $REPOS
-mkdir -p 
+mkdir -p $REPOS/MiniKraken
+cd $REPOS/MiniKraken
 wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_16gb_20220926.tar.gz
 tar -xvzf k2_standard_16gb_20220926.tar.gz
 
@@ -59,3 +64,6 @@ cd
 wget https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/image_you_want_to_display.jpg
 wget https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/image_you_want_to_copy.jpg
 
+###### install feh ######
+sudo apt install feh
+sudo apt  install evince
