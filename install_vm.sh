@@ -68,3 +68,6 @@ wget https://raw.githubusercontent.com/Sebastien-Raguideau/strain_resolution_pra
 ###### install feh ######
 sudo apt -y install feh
 sudo apt -y install evince
+
+###### remove script ######
+rm /home/ubuntu/install_vm.sh
