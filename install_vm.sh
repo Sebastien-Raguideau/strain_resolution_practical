@@ -34,8 +34,8 @@ ln -s bin/STRONG $REPOS/miniconda/envs/STRONG/bin/
 
 ###### install env for Intro ######
 cd $REPOS
-wget https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/conda_env_Intro.yaml
-mamba env create -f conda_env_Intro.yaml -y
+wget https://raw.githubusercontent.com/Sebastien-Raguideau/strain_resolution_practical/main/conda_env_Intro.yaml
+mamba env create -f conda_env_Intro.yaml
 rm conda_env_Intro.yaml
 
 
@@ -62,9 +62,9 @@ ln -s Bandage_Ubuntu-x86-64_v0.9.0_AppImage /home/ubuntu/repos/miniconda3/bin/Ba
 
 ###### add silly jpg ######
 cd 
-wget https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/image_you_want_to_display.jpg
-wget https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/image_you_want_to_copy.jpg
+wget https://raw.githubusercontent.com/Sebastien-Raguideau/strain_resolution_practical/main/Figures/image_you_want_to_copy.jpg
+wget https://raw.githubusercontent.com/Sebastien-Raguideau/strain_resolution_practical/main/Figures/image_you_want_to_display.jpg
 
 ###### install feh ######
-sudo apt install feh
-sudo apt  install evince
+sudo apt -y install feh
+sudo apt -y install evince
