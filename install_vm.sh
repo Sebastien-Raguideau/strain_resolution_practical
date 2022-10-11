@@ -40,7 +40,7 @@ rm conda_env_Intro.yaml
 
 
 ###### Add databases ######
-export DATABASE=$HOME"/Database"
+export DATABASE=$HOME"/Databases"
 mkdir -p $DATABASE
 cd $DATABASE
 
