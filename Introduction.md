@@ -38,6 +38,7 @@ This will involve a collection of different software programs:
 
 ## Getting started (VM, ssh & env)
 
+Note this tutorial is configured for the Birmingham VMs on the Warwick VMs (INIVM1-*) that kraken database was placed in '~/Databases' so simply change path in Kraken commands replaced repos with Databases.
 
 Please ssh to your vm using the -Y option so that X forwarding can be done. 
 
@@ -178,7 +179,7 @@ echo "also be sure to change name of the report and name of the output, otherwis
 
  ```bash
 cd ~/Projects/AD_binning/Kraken
-kraken2 --db ~/Databases/MiniKraken ~/Projects/AD_binning/Assembly/final.contigs.fa --threads 8 --use-names --report kraken_assembly_report.txt --output kraken_assembly
+kraken2 --db ~/repos/MiniKraken ~/Projects/AD_binning/Assembly/final.contigs.fa --threads 8 --use-names --report kraken_assembly_report.txt --output kraken_assembly
 ktImportTaxonomy -q 1 -t 5 kraken_assembly_report.txt -o kraken_krona_assembly_report.html
 ```
 
