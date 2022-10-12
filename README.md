@@ -431,7 +431,7 @@ The summary files gives information on number of mags, strains and taxonomy. Oth
 
 #### Bin specific results
 ```
-cd Results/results/Bin_2
+cd ~/Projects/STRONG_AD/STRONG_OUT/results/Bin_2
 ```
 
 Joined graph is useful indicates that we have probably missed a strain on this example, this might be down to not running gene filtering or multiple NMF iterations.
