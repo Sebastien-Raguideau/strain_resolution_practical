@@ -102,7 +102,15 @@ kraken2 --db ~/repos/MiniKraken ~/Data/AD_small/sample1/sample1_R1.fastq --threa
 How many reads have been classified? Why did this happen?
 If Kraken2 was able to classify all reads. What sort of information does it gives us. Is it the diversity, the accurate number of each organisms?
 
-We can visualise the kraken report as a Krona plot:
+We can visualise the kraken report as a Krona plot. Before doing that will need to run this step just once (on Birmingham VMs only):
+```
+    cd ~/repos/miniconda3/envs/Intro/opt/krona
+    ./updateTaxonomy.sh
+    cd ~/Projects/AD_binning/Kraken
+```
+
+
+:
 
 ```bash
 ktImportTaxonomy -q 1 -t 5 kraken_report.txt -o kraken_krona_report.html
