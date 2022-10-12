@@ -174,7 +174,12 @@ The restart the assembly step:
 
 Whilst that is running login on a separate terminal (using X windows) so we can look at the assembly output - don't forget to restart the STRONG conda environment:
 
+<<<<<<< HEAD
 ~~If you are running a Birmingham VM (name INI-VM-S*) then you will also need to install Bandage for this next part:~~
+=======
+
+***Not needed anymore*** If you are running a Birmingham VM (name INI-VM-S*) then you will also need to install Bandage for this next part:
+
 ```
 sudo apt install bandage
 ```
