@@ -362,11 +362,10 @@ bayespaths Bin_2/simplif 77 Bin_2 -r 150 -l Bin_2/selected_cogs.tsv -t coreCogs.
 This will take a little time. It should select three strains. We can have a look at the output:
 
 If it takes too long on your VM have a look at the prerun results:
-
-Let's go again to preruns results
 ```bash
 cd ~/repos/strain_resolution_practical/STRONG_prerun/bayespaths/Bin_2
 ```
+Otherwise stay in this dir.
 
 Then let's look at the output files:
 #### Bin_2F_Pred.csv
