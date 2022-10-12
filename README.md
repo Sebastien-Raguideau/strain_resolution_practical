@@ -172,7 +172,12 @@ The restart the assembly step:
     STRONG --config config.yaml STRONG_OUT assembly --threads 8
 ```
 
-Whilst that is running login on a separate terminal so we can look at the assembly output:
+Whilst that is running login on a separate terminal (using X windows) so we can look at the assembly output - don't forget to restart the STRONG conda environment:
+
+If you are running a Birmingham VM (name INI-VM-S*) then you will also need to install Bandage for this next part:
+```
+sudo apt install bandage
+```
 
 
 #### Coassembly
