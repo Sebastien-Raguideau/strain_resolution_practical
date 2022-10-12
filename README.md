@@ -278,12 +278,6 @@ cd ~/Projects/STRONG_AD
 STRONG --config config.yaml STRONG_OUT graphextraction --threads 8 --verbose
 ```
 
-Can look at the results which are again in gfa format:
-
-```bash
-cd STRONG_OUT/subgraphs/bin_merged
-```
-
 Which are again in gfa format with coverages, the raw subgraph unitigs match to the original simplified gfa but the simplified do not:
 
 ![Select](./Figures/Select.png) 
@@ -310,11 +304,18 @@ COG0060 for this MAG looks like:
 
 ![Bin_2 COG0060](Figures/Bin_2_COG0060.png) 
 
-You can visualise this yourself using Bandage:
+
+Can look at the results which are again in gfa format:
+
+
+Then visualise the simplified COG gfa in bandage:
 
 ```
-Bandage
+Bandage load Bin_2/simplif/COG0060.gfa
 ```
+
+Can you find and load the raw graph next - is there any difference?
+
 
 
 We might estimate this contains three strains, can we confirm that. We will do a trial run of BayesPaths to test this, in a new directory:
