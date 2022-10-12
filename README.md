@@ -176,6 +176,7 @@ Whilst that is running login on a separate terminal (using X windows) so we can 
 
 
 ***Not needed anymore*** If you are running a Birmingham VM (name INI-VM-S*) then you will also need to install Bandage for this next part:
+
 ```
 sudo apt install bandage
 ```
@@ -239,6 +240,7 @@ This step of the pipeline also does bowtie2 mapping of reads onto contigs to get
 profiles for binning:
 
 ```bash
+cd ~/Projects/STRONG_AD/STRONG_OUT
 head profile/split/coverage.tsv 
 ```
 
