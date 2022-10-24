@@ -5,10 +5,10 @@ samples: ['*'] # specify a list samples to use or '*' to use all samples
 threads : 8 # single task nb threads
 
 # ------ Path to data  ------ 
-data: /home/ubuntu/Data/AD_small
+data: /home/training/Data/AD_small
 
 # ----- Annotation database -----
-cog_database: /home/ubuntu/Databases/rpsblast_cog_db
+cog_database: /home/training/Databases/rpsblast_cog_db
 
 
 # ----- Binning parameters ------
