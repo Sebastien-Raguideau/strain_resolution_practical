@@ -1,5 +1,3 @@
-
-
 # Practical : Strain resolution
 
 Plan for the session:
@@ -9,12 +7,6 @@ Plan for the session:
 
 ##  STRONG - Strain Resolution ON Graphs
 
-### Login
-
-Login to your VM with X windows forwarding:
-```
-ssh -Y ubuntu@xxxx.yyy.zzz.ttt
-```
 
 ### Overview
 
@@ -57,10 +49,10 @@ Try activating the relevant conda environment :
 **Databases**
 
  - [COG database](ftp://ftp.ncbi.nlm.nih.gov/pub/mmdb/cdd/little_endian) , you will find it installed at
-    `/home/ubuntu/Databases/rpsblast_cog_db`
+    `/home/training/Databases/rpsblast_cog_db`
 
  - (optional) [GTDB](https://pubmed.ncbi.nlm.nih.gov/30148503/) , used
-   with gtdb-tk, (77Gb) takes way more than 20Gb ram on execution.
+   with gtdb-tk, (77Gb) too much ram needed and execution too slow for this present tutorial.
 
 #### Dataset
 Anaerobic digester metagenomic time series subsampled for this tutorial, reads mapping only to a few bins of interest.
@@ -115,12 +107,13 @@ more config.yaml
 ```
 For 5-10 mins try to use the STRONG [documentation](https://github.com/chrisquince/STRONG) to fill in this config file. Edit the config file with nano or vi so that it runs the samples in:
 ```
- ~/Data/AD_small/
+ /home/training/Data/AD_small
 ```
 
 Check that your config file works with the dryrun command.
 ```bash
 cd  ~/Projects/STRONG_AD
+rm -r STRONG_OUT
 STRONG --config config.yaml STRONG_OUT assembly --threads 8 --dryrun --verbose
 ```
 <details><summary>Is something wrong with your config file?</summary>
@@ -129,8 +122,8 @@ STRONG --config config.yaml STRONG_OUT assembly --threads 8 --dryrun --verbose
 Debuging a config file:
  - First it has to be a valid .yaml file, [here](https://en.wikipedia.org/wiki/YAML) is the format definition and [here](http://www.yamllint.com/) is a validator. In short, don't forget indentations or colons. 
  - you only have 2 paths to fill the path to the sample **folder** and the path to the cog database. If you have issues, you may have mispellled any of these. Use the  `ls`   command to check the path exists.
- - the cog database path is `/home/ubuntu/Databases/rpsblast_cog_db`
- - the data folder path is:  `/home/ubuntu/Data/AD_small`
+ - the cog database path is `/home/training/Databases/rpsblast_cog_db`
+ - the data folder path is:  `/home/training/Data/AD_small`
  <details><summary>It's still not working? </summary>
 <p>
 
@@ -152,6 +145,7 @@ When using the dryrun option what happens?
 Let's launch STRONG for real this time:
 ```bash
 cd ~/Projects/STRONG_AD
+rm -r STRONG_OUT
 STRONG --config config.yaml STRONG_OUT assembly --threads 8
 ```
 We only started running the first step of STRONG, the assembly step, it consists of more than 150 tasks 
@@ -172,14 +166,8 @@ The restart the assembly step:
     STRONG --config config.yaml STRONG_OUT assembly --threads 8
 ```
 
-Whilst that is running login on a separate terminal (using X windows) so we can look at the assembly output - don't forget to restart the STRONG conda environment:
+Whilst that is running login on a separate terminal so we can look at the assembly output - don't forget to restart the STRONG conda environment:
 
-
-***Not needed anymore*** If you are running a Birmingham VM (name INI-VM-S*) then you will also need to install Bandage for this next part:
-
-```
-sudo apt install bandage
-```
 
 
 #### Coassembly
@@ -189,13 +177,13 @@ cd  ~/Projects/STRONG_AD/STRONG_OUT/
 ls -lh assembly/spades/contigs.fasta
 ```
 
-How good is the coassembly, what is the N50? What is a good coassembly?
+How good is the coassembly, what is the N50? What is a good coassembly? Btw, why a coassembly? when a coassembly?
 
 ```bash
 ~/repos/strain_resolution_practical/scripts/contig-stats.pl < ./assembly/spades/contigs.fasta
 ```
 
-sequence #: 1966	total length: 6377796	max length: 174676	N50: 28942	N90: 3000
+sequence #: 1966    total length: 6377796   max length: 174676  N50: 28942  N90: 3000
 
 #### Assembly graph
 Other useful things to look at include the simplified graph that will be used for strain resolution. This can be visualised with Ryan Wick's excellent [Bandage](https://github.com/rrwick/Bandage) program:
@@ -208,8 +196,16 @@ ls -l -h assembly/high_res/simplified.gfa
 ![Simplified](./Figures/Simplified.png) 
 
 Why do we use a "high resolution assembly graph"?
+
+Lets take some time to look at the assembly graph with bandage
+```bash
+ Bandage load assembly/high_res/simplified.gfa`
+```
+
  
 Using Bandage it is possible to extract part of the assembly graph with a command such as 
+
+
 ```bash
  Bandage reduce <INPUT_GRAPH.gfa>  <NAME_OF_OUTPUT.gfa> --scope aroundnodes --nodes <NODE> --distance 0
 ```
@@ -219,6 +215,8 @@ I did that for the exact same COG0016 from 3 assembly graph files:
 - on  `assembly/high_res/simplified.gfa`
 
 ![alt tag](https://github.com/Sebastien-Raguideau/strain_resolution_practical/blob/main/Figures/COG0016.png)
+Open and visualise the "simplified" assembly graph:
+
 What are the differences between the 3 assemblies graph? Can you tell which sequence comes from which type of assembly?
 
 On the normal assembly we can see a unique contig, but in reality there are 3 strains. Why is there only 1 contigs?
@@ -244,7 +242,7 @@ cd ~/Projects/STRONG_AD/STRONG_OUT
 head profile/split/coverage.tsv 
 ```
 
-It also does the actual binning using as default a two step version of CONCOCT although metabat2 is an option:
+It also does the actual binning using by default a two step version of CONCOCT although metabat2 is an option:
 
 ```bash
 more binning/concoct/list_mags.tsv
@@ -280,7 +278,11 @@ cd ~/Projects/STRONG_AD
 STRONG --config config.yaml STRONG_OUT graphextraction --threads 8 --verbose
 ```
 
-Which are again in gfa format with coverages, the raw subgraph unitigs match to the original simplified gfa but the simplified do not:
+Which are again in gfa format with coverages.
+    
+
+ - Raw subgraph: subgraph directly taken from `assembly/high_res/simplified.gfa`
+ - simplified subgraph: Raw subgraph further processed "simplified" using coverage. These subgraph do not match the initial assembly graph.
 
 ![Select](./Figures/Select.png) 
 
@@ -375,12 +377,12 @@ Let's generate a simple plot of fit:
 
 ```
 R
->Pred <- read.csv('Bin_2F_Pred.csv',header=T)
->library(ggplot2)
->pdf('X.pdf')
->qplot(data=Pred,x=X_est,y=X) + geom_smooth() + theme_bw()
->dev.off()
->q()
+Pred <- read.csv('Bin_2F_Pred.csv',header=T)
+library(ggplot2)
+pdf('X.pdf')
+qplot(data=Pred,x=X_est,y=X) + geom_smooth() + theme_bw()
+dev.off()
+q()
 ```
 
 Then visualise plot:
@@ -393,7 +395,7 @@ evince X.pdf
 #### Bin_2F_maxPath.tsv
 ```
 grep "COG0060" Bin_2F_maxPath.tsv | sed 's/COG0060_//g' > Bin_2F_maxPath_COG0060.tsv
-python ~/repos/STRONG/BayesPaths/scripts/Add_color.py ./Bin_2/simplif/COG0060.gfa Bin_2F_maxPath_COG0060.tsv > COG0060_color.gfa
+python ~/repos/STRONG/BayesPaths/scripts/Add_color.py ../../subgraphs/bin_merged/Bin_2/simplif/COG0060.gfa Bin_2F_maxPath_COG0060.tsv > COG0060_color.gfa
 ```
 
 This can be visualised in Bandage on your local machine may be easier
@@ -409,8 +411,8 @@ We can also look at the time series of strain abundances:
 ```
 cp ~/repos/strain_resolution_practical/scripts/GammaPlot.R .
 R
->source('GammaPlot.R')
->q()
+source('GammaPlot.R')
+q()
 ```
 
 ![X](Figures/TimeSeries.png)
@@ -422,6 +424,7 @@ R
 If the STRONG bayespaths step has finished we can generate results dir now:
  
 ```bash
+cd /home/training/Projects/STRONG_AD
 STRONG --config config.yaml STRONG_OUT results --threads 8 --verbose
 
 ```    
@@ -452,7 +455,7 @@ STRONG will run gtdb on MAGs as standard but this is too slow and uses too much 
 
 ```bash
 cd ~/Projects/STRONG_AD/STRONG_OUT
-ln -s ~/repos/strain_resolution_practical/STRONG_prerun/results resultsp
+ln -s ~/repos/strain_resolution_practical/STRONG_prerun/results result_prerun
 ```
 
 Have a look at the summary file to find out the identity of the MAGs.
@@ -466,14 +469,3 @@ To run gtdb you need to add a line inside the config file with the path to gtdb 
 ## Extra things
 
 Can you run STRONG with metabat2?
-
-Can you taxonomically assign contigs with Kraken?
-
-
-
-
-
-
-
-
-
