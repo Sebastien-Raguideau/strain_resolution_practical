@@ -39,8 +39,8 @@ The minimum rule is :
 Example :
 ```bash
 rule Hello_world:
-    input: "/home/ubuntu/requirerement.txt"
-    output: "/home/ubuntu/snakemake.txt"
+    input: "/home/training/requirerement.txt"
+    output: "/home/training/snakemake.txt"
     shell: "echo HELLO WORLD > {output}"
 ```
 
@@ -128,8 +128,8 @@ If you ever want to use wildcards be sure that all wildcards in input cat be der
 Let's start with the creation of files for megahit. The best way to proceed is to copy and paste previous command lines and build around it. First let's have a go at creating the R1.csv and R2.csv.
 Start from 
 ```bash
-ls /home/ubuntu/Data/AD_small/*/*R1.fastq | tr "\n" "," | sed 's/,$//' > R1.csv
-ls /home/ubuntu/Data/AD_small/*/*R2.fastq | tr "\n" "," | sed 's/,$//' > R2.csv
+ls /home/training/Data/AD_small/*/*R1.fastq | tr "\n" "," | sed 's/,$//' > R1.csv
+ls /home/training/Data/AD_small/*/*R2.fastq | tr "\n" "," | sed 's/,$//' > R2.csv
 ```
 Let's all agree on working on a file called: "binning.snake"
 <details><summary>Try for yourself for 5 min before looking here. </summary>
@@ -139,7 +139,7 @@ Let's all agree on working on a file called: "binning.snake"
 rule create megahit_files:
     output: R1 = "{path}/R1.csv",
             R2 = "{path}/R2.csv"
-    params: data = "/home/ubuntu/Data/AD_small"
+    params: data = "/home/training/Data/AD_small"
     shell:"""
         ls {params.data}/*/*R1.fastq | tr "\n" "," | sed 's/,$//' > {output.R1}
         ls {params.data}/*/*R2.fastq | tr "\n" "," | sed 's/,$//' > {output.R2}
@@ -209,8 +209,8 @@ To note:
 
 ```bash
 rule map_reads:
-    input: R1 = "/home/ubuntu/Data/AD_small/{sample}/{sample}_R1.fastq",
-           R2 = "/home/ubuntu/Data/AD_small/{sample}/{sample}_R1.fastq",
+    input: R1 = "/home/training/Data/AD_small/{sample}/{sample}_R1.fastq",
+           R2 = "/home/training/Data/AD_small/{sample}/{sample}_R1.fastq",
            index = "{path}/Assembly/index.done",
            assembly = "{path}/Assembly/final.contigs.fa"
     output: "{path}/Map/{sample}.mapped.sorted.bam"
@@ -261,7 +261,7 @@ import glob
 from os.path import basename,dirname
 
 # create a string variable to store path
-DATA="/home/ubuntu/Data/AD_small"
+DATA="/home/training/Data/AD_small"
 # use the glob function to find all R1.fastq file in each folder of DATA
 # then only keep the directory name wich is also the sample name
 SAMPLES = [basename(dirname(file)) for file in glob.glob("%s/*/*_R1.fastq"%DATA)]
@@ -315,7 +315,7 @@ rule megahit:
            R2 = "{path}/R2.csv"
     output: "{path}/Assembly/final.contigs.fa"
     params: "{path}/Assembly"
-    conda: "/home/ubuntu/repos/strain_resolution_practical/conda_env.yaml"
+    conda: "/home/training/repos/strain_resolution_practical/conda_env.yaml"
     threads: 50
     shell: "rm -r {params} && megahit -1 $(<{input.R1}) -2 $(<{input.R1}) -t {threads} -o {params}"
 ```
